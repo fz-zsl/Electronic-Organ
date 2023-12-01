@@ -33,7 +33,7 @@ module PS2Decoder(
         if (~rst_n)
             head <= 0;
         else if (in_en && out_en)
-            head = head + 1;
+            head <= head + 1;
     end
 
     assign out_en = (head != tail);
