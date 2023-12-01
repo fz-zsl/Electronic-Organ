@@ -44,6 +44,7 @@
 `define ps2_crtl 8'h14
 `define ps2_enter 8'h5a
 `define ps2_esc 8'h76
+`define ps2_sc 8'h4c
 
 `define ps2_f1 8'h05
 `define ps2_f2 8'h06
@@ -64,11 +65,11 @@
 `define ps2_right 8'h74
 
 // default keys
-`define def_do ps2_a
-`define def_re ps2_s
-`define def_mi ps2_d
-`define def_fa ps2_f
-`define def_so ps2_j
-`define def_la ps2_k
-`define def_si ps2_l
-`define def_do2 ps2_semicolon
+`define def_do `ps2_a
+`define def_re `ps2_s
+`define def_mi `ps2_d
+`define def_fa `ps2_f
+`define def_so `ps2_j
+`define def_la `ps2_k
+`define def_si `ps2_l
+`define def_do2 `ps2_sc

@@ -1,5 +1,5 @@
 `define BIT_LENGTH 30
-module clock_divider
+module ClockDivider
 (
     input                   clk,
     input                   rst_n,
