@@ -1,0 +1,11 @@
+`define DATA_WIDTH          10   
+`define MAX_DEPTH           1024
+`define MAX_DEPTH_BIT       10
+`define SAMPLE_INTERVAL     50000000
+`define MAX_SAMPLE_INTERVAL 32
+`define AUTOPLAY            0
+`define LEARNING            1
+`define STATE_WIDTH         3
+`define MAX_MEMORY          4
+`define MAX_MEMORY_BIT      2
+`define PRE_WRITTEN_COUNT   1
