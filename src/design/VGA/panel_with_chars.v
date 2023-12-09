@@ -1,23 +1,3 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2023/12/09 17:29:33
-// Design Name: 
-// Module Name: panel_with_chars
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 module panel_with_chars #(
     parameter   char_width      =   8           ,
     parameter   char_height     =   16          ,   
@@ -85,6 +65,5 @@ module panel_with_chars #(
                 pos_data <= 24'b0;
         end
     end
-    
 
 endmodule

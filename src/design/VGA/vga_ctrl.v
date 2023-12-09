@@ -1,24 +1,4 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2023/12/06 10:27:04
-// Design Name: 
-// Module Name: vga_ctrl
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
- module  vga_ctrl (     
+module vga_ctrl (     
     input   wire            vga_clk,  
     input   wire            sys_rst_n,  
     input   wire    [23:0]  pix_data,  

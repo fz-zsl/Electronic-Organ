@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 `define BUFFER_LENGTH    20
 `define DISPLAY_LENGTH   480
 `define TOT_LENGTH       500
