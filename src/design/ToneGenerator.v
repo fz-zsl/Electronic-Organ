@@ -30,7 +30,7 @@ module ToneGenerator(
 
     always @(*) begin
         case({shift, note})
-            5'b00001: pre_set = `C2; // middle octave
+            5'b00001: pre_set = `C2; // Middle octave
             5'b00010: pre_set = `D2;
             5'b00011: pre_set = `E2;
             5'b00100: pre_set = `F2;
@@ -38,7 +38,7 @@ module ToneGenerator(
             5'b00110: pre_set = `A2;
             5'b00111: pre_set = `B2;
             
-            5'b01001: pre_set = `C3; // lower octave
+            5'b01001: pre_set = `C3; // Lower octave
             5'b01010: pre_set = `D3;
             5'b01011: pre_set = `E3;
             5'b01100: pre_set = `F3;
@@ -46,7 +46,7 @@ module ToneGenerator(
             5'b01110: pre_set = `A3;
             5'b01111: pre_set = `B3;
             
-            5'b10001: pre_set = `C4; // higher octave
+            5'b10001: pre_set = `C4; // Higher octave
             5'b10010: pre_set = `D4;
             5'b10011: pre_set = `E4;
             5'b10100: pre_set = `F4;
@@ -58,7 +58,8 @@ module ToneGenerator(
     end
 
     assign pre_div = pre_set >> 1;
-
+    
+    //Generate the PWM signals
     always @(posedge clk or negedge rst_n) begin
 		if(!rst_n) begin
 			pwm <= 1'b1;

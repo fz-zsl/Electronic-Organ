@@ -1,4 +1,5 @@
 // frequency of notes in Hz
+//Lowest octave
 `define C3 763359
 `define D3 680272
 `define E3 606061
@@ -6,7 +7,8 @@
 `define G3 510204
 `define A3 454545
 `define B3 408163
-                
+
+//Middle octave
 `define C2 381679
 `define D2 340136
 `define E2 303030
@@ -15,6 +17,7 @@
 `define A2 227273
 `define B2 202429
 
+//Highest octave
 `define C4 191205
 `define D4 173010
 `define E4 151745

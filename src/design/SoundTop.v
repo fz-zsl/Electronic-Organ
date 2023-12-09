@@ -29,7 +29,7 @@ module SoundTop(
             index <= 3'b0;
             cnt <= 3'b0;
         end
-        else if(flag_state == 1'b0 || flag_switch == 1'b1) begin
+        else if(flag_state == 1'b0 || flag_switch == 1'b1) begin//Reset the Buffer
             index <= 3'b0;
             cnt <= 3'b0;
             buffer[0] <= 3'b0;
@@ -78,6 +78,7 @@ module SoundTop(
         .pwm        (pwm)
     );
     
+    //Read the notes from the buffer
     assign note = buffer[division];
 
     
