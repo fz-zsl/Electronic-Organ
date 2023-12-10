@@ -93,6 +93,5 @@ module panel_with_chars #(
                 pos_data <= 24'b0;
         end
     end
-    
 
 endmodule
