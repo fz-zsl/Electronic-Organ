@@ -8,7 +8,8 @@ module Internal_MusicMemory_1(
     input wire                  read_rst,
     input wire [`DATA_WIDTH-1:0] data_in,
     output reg [`DATA_WIDTH-1:0] data_out,
-    output reg                  output_ready
+    output reg                  output_ready,
+    output wire [`MAX_DEPTH_BIT-1:0]  duration
 );
 
 wire [`DATA_WIDTH-1:0]    memory  [0:31]; // memory for notes and octave
@@ -48,6 +49,8 @@ assign memory[28] = 10'b0000010000;
 assign memory[29] = 10'b0000010000;
 assign memory[30] = 10'b0000001000;
 assign memory[31] = 10'b0000001000;
+
+assign duration = count;
 
 // Initialize internal signals
 initial begin

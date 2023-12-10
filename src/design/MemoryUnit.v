@@ -9,7 +9,8 @@ module MemoryUnit(
     input wire [`STATE_WIDTH-1:0]        current_state,  // 00 for autoplay, 01 for learning, 10 and 11 other state
     input wire [`DATA_WIDTH-1:0]         data_in,
     output reg [`DATA_WIDTH-1:0]         data_out,
-    output reg                          output_ready
+    output reg                          output_ready,
+    output wire [`MAX_DEPTH_BIT-1:0]     duration
 );
 
 wire [`DATA_WIDTH-1:0]   note_data_out;
@@ -19,7 +20,7 @@ wire                    music_output_ready;
 wire                    read_rst_in;
 
 NoteMemory Note(clk, rst_n, write_en, read_en, read_rst_in, data_in, note_data_out, note_output_ready);
-MusicMemory Music(clk, rst_n, write_en, read_en, read_rst_in, data_in, music_data_out, music_output_ready);
+MusicMemory Music(clk, rst_n, write_en, read_en, read_rst_in, data_in, music_data_out, music_output_ready, duration);
 
 assign read_rst_in = ((current_state == `AUTOPLAY || current_state == `LEARNING) ? 0 : 1) | read_rst;
 

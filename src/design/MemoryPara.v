@@ -5,7 +5,7 @@
 `define MAX_SAMPLE_INTERVAL 32
 `define AUTOPLAY            0
 `define LEARNING            1
-`define STATE_WIDTH         3
-`define MAX_MEMORY          4
-`define MAX_MEMORY_BIT      2
-`define PRE_WRITTEN_COUNT   1
+`define STATE_WIDTH         4
+`define MAX_MEMORY          8
+`define MAX_MEMORY_BIT      3
+`define PRE_WRITTEN_COUNT   5

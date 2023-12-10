@@ -8,7 +8,8 @@ module MusicMemory(
     input wire                  read_rst,
     input wire [`DATA_WIDTH-1:0] data_in,
     output reg [`DATA_WIDTH-1:0] data_out,
-    output reg                  output_ready
+    output reg                  output_ready,
+    output wire [`MAX_DEPTH_BIT-1:0]  duration
 );
 
 reg [`DATA_WIDTH-1:0]            memory  [0:`MAX_DEPTH-1]; // memory for notes and octave
@@ -18,6 +19,7 @@ reg [`MAX_DEPTH_BIT-1:0]         write_pointer;              // position of writ
 reg [`MAX_SAMPLE_INTERVAL-1:0]   write_sample_counter;
 reg [`MAX_SAMPLE_INTERVAL-1:0]   read_sample_counter;
 
+assign duration = count;
 
 // Initialize internal signals
 initial begin

@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 `include "MemoryPara.v"
-module Internal_MemoryUnit_1(
+module Internal_MemoryUnit_5(
     input wire                          clk,
     input wire                          rst_n,
     input wire                          write_en,
