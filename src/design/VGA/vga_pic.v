@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
+//This modules should be reshaped to a large finite state machine. 
 module vga_pic(
     input   wire            vga_clk     ,
     input   wire            rst_n       ,

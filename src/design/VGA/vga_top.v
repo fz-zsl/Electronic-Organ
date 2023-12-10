@@ -28,16 +28,16 @@ module  vga_top (
     output  wire    [23:0]  color           //RGB Data
 );
 
- wire               vga_clk ; 
- wire               rst_n   ; 
- wire    [9:0]      pos_x   ; 
- wire    [9:0]      pos_y   ; 
- wire    [23:0]     pix_data; 
- wire               locked  ;
+wire               vga_clk ; 
+wire               rst_n   ; 
+wire    [9:0]      pos_x   ; 
+wire    [9:0]      pos_y   ; 
+wire    [23:0]     pix_data; 
+wire               locked  ;
 
 assign  rst_n = (sys_rst_n & locked);
 
- //------------- clk_gen_inst ------------- 
+//------------- clk_gen_inst ------------- 
 clk_wiz_0 clk_wiz_inst (
     .clk            (sys_clk    ), 
     .rst_n          (sys_rst_n  ), 
@@ -45,7 +45,7 @@ clk_wiz_0 clk_wiz_inst (
     .locked         (locked     )
 );  
     
- //------------- vga_ctrl_inst ------------- 
+//------------- vga_ctrl_inst ------------- 
 vga_ctrl  vga_ctrl_inst(     
     .vga_clk        (vga_clk    ),  
     .sys_rst_n      (sys_rst_n  ), 
@@ -57,7 +57,7 @@ vga_ctrl  vga_ctrl_inst(
     .rgb            (color      )
  );
  
- //------------- vga_pic_inst ------------- 
+//------------- vga_pic_inst ------------- 
 vga_pic vga_pic_inst 
 (     .vga_clk      (vga_clk    ), 
       .sys_rst_n    (rst_n      ), 

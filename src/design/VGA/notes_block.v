@@ -2,8 +2,23 @@
 `define BUFFER_LENGTH    20
 `define DISPLAY_LENGTH   480
 `define TOT_LENGTH       500
-
-module vga_pic(
+//This is the module that displays the falling blocks.
+module vga_pic #(
+    parameter  width            =   32,
+    parameter  height           =   32,
+    parameter  period           =   100000,
+    
+    parameter  start_point_x_C  =   112,
+    parameter  start_point_x_D  =   176,
+    parameter  start_point_x_E  =   240,
+    parameter  start_point_x_F  =   304,
+    parameter  start_point_x_G  =   368,
+    parameter  start_point_x_A  =   432,
+    parameter  start_point_x_B  =   496,
+    
+    parameter  block_color      =   24'b0,
+)
+(
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,
@@ -11,21 +26,7 @@ module vga_pic(
     input   wire    [7:0]   note        ,
     output  reg     [23:0]  pos_data      
     );
-    
-    parameter  width            =   32;
-    parameter  height           =   32;
-    parameter  period           =   100000;
-    
-    parameter  start_point_x_C  =   112;
-    parameter  start_point_x_D  =   176;
-    parameter  start_point_x_E  =   240;
-    parameter  start_point_x_F  =   304;
-    parameter  start_point_x_G  =   368;
-    parameter  start_point_x_A  =   432;
-    parameter  start_point_x_B  =   496;
-    
-    parameter  block_color      =   24'b0;
-    
+        
     reg [`BUFFER_LENGTH:0]      buffer [7:0];
     reg [`DISPLAY_LENGTH-1:0]   display[7:0];
     reg [19:0]                  count;

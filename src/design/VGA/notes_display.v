@@ -1,4 +1,19 @@
-module notes_display(
+//This is the module that displays the COE notes. 
+module notes_display#(
+    parameter  width            =   32,
+    parameter  height           =   32,
+    
+    parameter  start_point_x_C  =   112,
+    parameter  start_point_x_D  =   176,
+    parameter  start_point_x_E  =   240,
+    parameter  start_point_x_F  =   304,
+    parameter  start_point_x_G  =   368,
+    parameter  start_point_x_A  =   432,
+    parameter  start_point_x_B  =   496,
+    
+    parameter  start_point_y    =   224
+)
+(
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,
@@ -7,19 +22,7 @@ module notes_display(
     output  reg     [23:0]  pos_data      
     );
     
-    parameter  width            =   32;
-    parameter  height           =   32;
-    
-    parameter  start_point_x_C  =   112;
-    parameter  start_point_x_D  =   176;
-    parameter  start_point_x_E  =   240;
-    parameter  start_point_x_F  =   304;
-    parameter  start_point_x_G  =   368;
-    parameter  start_point_x_A  =   432;
-    parameter  start_point_x_B  =   496;
-    
-    parameter  start_point_y    =   224;
-    
+//The following instantiation has used IP catalog, therefore need to instantiate ROM that has initialized loading COE files.
    //------------------------Note_C_Display------------------------//    
         wire [23:0] data_output_C   ;
         wire [10:0] data_addr_C     ;

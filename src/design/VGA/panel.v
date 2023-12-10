@@ -18,6 +18,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
+//This is the module that can directly displays a choose panel with simple configurations.
 module panel(
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
@@ -53,7 +54,7 @@ module panel(
     wire                enable_1;
     wire    [23:0]      output_1;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_1)          ,
+        .panel_start_x  (start_point_x_panel_1),
         .panel_start_y  (start_point_y_panel_1)          
     ) panel_1
     ( 
@@ -69,7 +70,7 @@ module panel(
     wire                enable_2;
     wire    [23:0]      output_2;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_2)          ,
+        .panel_start_x  (start_point_x_panel_2),
         .panel_start_y  (start_point_y_panel_1)          
     )panel_2
     (
@@ -85,7 +86,7 @@ module panel(
     wire                enable_3;
     wire    [23:0]      output_3;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_1)          ,
+        .panel_start_x  (start_point_x_panel_1),
         .panel_start_y  (start_point_y_panel_2)          
     )panel_3
     (
@@ -101,7 +102,7 @@ module panel(
     wire                enable_4;
     wire    [23:0]      output_4;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_2)          ,
+        .panel_start_x  (start_point_x_panel_2),
         .panel_start_y  (start_point_y_panel_2)          
     )panel_4
     (
@@ -117,7 +118,7 @@ module panel(
     wire                enable_5;
     wire    [23:0]      output_5;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_1)          ,
+        .panel_start_x  (start_point_x_panel_1),
         .panel_start_y  (start_point_y_panel_3)          
     )panel_5
     (
@@ -133,7 +134,7 @@ module panel(
     wire                enable_6;
     wire    [23:0]      output_6;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_2)          ,
+        .panel_start_x  (start_point_x_panel_2),
         .panel_start_y  (start_point_y_panel_3)          
     )panel_6
     (
@@ -149,7 +150,7 @@ module panel(
     wire                enable_7;
     wire    [23:0]      output_7;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_1)          ,
+        .panel_start_x  (start_point_x_panel_1),
         .panel_start_y  (start_point_y_panel_4)          
     )panel_7
     (
@@ -165,7 +166,7 @@ module panel(
     wire                enable_8;
     wire    [23:0]      output_8;
     panel_with_chars #(
-        .panel_start_x  (start_point_x_panel_2)          ,
+        .panel_start_x  (start_point_x_panel_2),
         .panel_start_y  (start_point_y_panel_4)          
     )panel_8
     (
@@ -270,9 +271,7 @@ module panel(
         end
     end
 
-
-
-
+//---------------------------Pos_Data Output Decision Panel---------------------------//
     always @(posedge vga_clk or negedge rst_n) begin
         if(~rst_n) 
             pos_data <= 24'b0;

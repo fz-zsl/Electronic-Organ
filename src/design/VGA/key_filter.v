@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
+//This is the panels that help avoid key shaking. 
 module key_filter #(
     parameter               CNT_MAX = 20'd999_999
 )(  
