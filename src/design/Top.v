@@ -27,12 +27,12 @@ module Top (
 	wire nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc;
 	wire [7:0] pres_buts, pose_buts, nege_buts;
 	KeysDebouncer14 KeysDebouncer14_inst(
-		.slow_clk		(slow_clk		),
-		.rst_n			(rst_n			),
-		.but_in			({but_center,  but_up,  but_down,  but_left,  but_right,  ~but_esc, ~buts}),
-		.but_active		({pres_center, pres_up, pres_down, pres_left, pres_right, pres_esc, pres_buts}),
-		.but_posedge	({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc, pose_buts}),
-		.but_negedge	({nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc, nege_buts})
+		.slow_clk		(slow_clk																		),
+		.rst_n			(rst_n																			),
+		.but_in			({but_center,  but_up,  but_down,  but_left,  but_right,  ~but_esc, ~buts}		),
+		.but_active		({pres_center, pres_up, pres_down, pres_left, pres_right, pres_esc, pres_buts}	),
+		.but_posedge	({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc, pose_buts}	),
+		.but_negedge	({nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc, nege_buts}	)
 	);
 
 	//------------------Finite State Machine-----------------//
@@ -149,7 +149,7 @@ module Top (
 	end
 
 	//------------------Song Repertoire------------------//
-	parameter 			song_per_page 	= 4;
+	// parameter 			song_per_page 	= 4;
 	reg 				repertoire_page = 0;
 	reg 	[1:0] 		page_song_id 	= 0;
 
@@ -160,11 +160,11 @@ module Top (
 		end
 		else begin // We only use left right down because center and up are chosen.
 			if(mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode) begin
-				if(pose_left)
-					page_song_id <= (page_song_id == 2'b00) ? 2'b00 : page_song_id - 1;
-				else if(pose_right)
-					page_song_id <= (page_song_id == 2'b11) ? 2'b11 : page_song_id + 1;
+				if(pose_up)
+					page_song_id <= (page_song_id == 2'b00) ? 2'b11 : page_song_id - 1;
 				else if(pose_down)
+					page_song_id <= (page_song_id == 2'b11) ? 2'b00 : page_song_id + 1;
+				else if(pose_left || pose_right)
 					repertoire_page <= ~repertoire_page;
 				else begin
 					page_song_id <= page_song_id;
@@ -172,7 +172,7 @@ module Top (
 				end
 			end
 		end
-	end 
+	end
 
 	wire 	[2:0] 		visible_song_id;
 	assign  visible_song_id = {repertoire_page, page_song_id};
@@ -188,6 +188,4 @@ module Top (
 		.pwm		(pwm				),
 		.sd			(sd					)
 	);
-
-	assign Debug_LED = pres_buts;
 endmodule
