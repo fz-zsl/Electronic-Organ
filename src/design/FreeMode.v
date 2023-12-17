@@ -5,6 +5,7 @@ module FreeMode(
 	input 		 	but_up,
 	input 		 	but_center,
 	input 		 	but_down,
+	input	[7:0]	perm,
 	output			pwm,
 	output			sd
 );
@@ -25,11 +26,12 @@ module FreeMode(
 	end
 
 	SoundTop SoundTop_inst(
-		.clk		(clk																		),
-		.rst_n		(rst_n																		),
-		.shift		(octave																		),
-		.notes		({buts[0], buts[1], buts[2], buts[3], buts[4], buts[5], buts[6], buts[7]}	),
-		.pwm		(pwm																		),
-		.sd			(sd																			)
+		.clk		(clk															),
+		.rst_n		(rst_n															),
+		.shift		(octave															),
+		.notes		({buts[perm[0]], buts[perm[1]], buts[perm[2]], buts[perm[3]],
+						buts[perm[4]], buts[perm[5]], buts[perm[6]], buts[perm[7]]}	),
+		.pwm		(pwm															),
+		.sd			(sd																)
 	);
 endmodule

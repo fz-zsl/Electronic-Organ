@@ -35,6 +35,21 @@ module Top (
 		.but_negedge	({nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc, nege_buts}	)
 	);
 
+	//------------------Set keys------------------//
+	reg [2:0] perm [7:0];
+	reg [2:0] setting_cnt;
+	initial begin
+		setting_cnt = 3'b000;
+		perm[0] = 3'b000;
+		perm[1] = 3'b001;
+		perm[2] = 3'b010;
+		perm[3] = 3'b011;
+		perm[4] = 3'b100;
+		perm[5] = 3'b101;
+		perm[6] = 3'b110;
+		perm[7] = 3'b111;
+	end
+
 	//------------------Finite State Machine-----------------//
 	`include "TopParams.v";
 	reg		[7:0]		mode	= `WelcomePage;
@@ -61,7 +76,18 @@ module Top (
 					end
 					6'b010000: begin
 						case (next_mode)
-							`FreeMode:			next_mode	<= `SettingMode;
+							`FreeMode: begin
+								next_mode	<= `SettingMode;
+								setting_cnt	<= 3'b000;
+								perm[0]		<= 3'b000;
+								perm[1]		<= 3'b000;
+								perm[2]		<= 3'b000;
+								perm[3]		<= 3'b000;
+								perm[4]		<= 3'b000;
+								perm[5]		<= 3'b000;
+								perm[6]		<= 3'b000;
+								perm[7]		<= 3'b000;
+							end
 							`Song_PlayMode:		next_mode	<= `UserRanking;
 							`Song_LearnMode:	next_mode	<= `FreeMode;
 							`Song_GameMode:		next_mode	<= `Song_PlayMode;
@@ -74,7 +100,18 @@ module Top (
 						case (next_mode)
 							`FreeMode:			next_mode	<= `Song_LearnMode;
 							`Song_PlayMode:		next_mode	<= `Song_GameMode;
-							`Song_LearnMode:	next_mode	<= `SettingMode;
+							`Song_LearnMode: begin
+								next_mode	<= `SettingMode;
+								setting_cnt	<= 3'b000;
+								perm[0]		<= 3'b000;
+								perm[1]		<= 3'b000;
+								perm[2]		<= 3'b000;
+								perm[3]		<= 3'b000;
+								perm[4]		<= 3'b000;
+								perm[5]		<= 3'b000;
+								perm[6]		<= 3'b000;
+								perm[7]		<= 3'b000;
+							end
 							`Song_GameMode:		next_mode	<= `UserRanking;
 							`SettingMode:		next_mode	<= `FreeMode;
 							`UserRanking:		next_mode	<= `Song_PlayMode;
@@ -88,7 +125,18 @@ module Top (
 							`Song_LearnMode:	next_mode	<= `Song_GameMode;
 							`Song_GameMode:		next_mode	<= `Song_LearnMode;
 							`SettingMode:		next_mode	<= `UserRanking;
-							`UserRanking:		next_mode	<= `SettingMode;
+							`UserRanking: begin
+								next_mode	<= `SettingMode;
+								setting_cnt	<= 3'b000;
+								perm[0]		<= 3'b000;
+								perm[1]		<= 3'b000;
+								perm[2]		<= 3'b000;
+								perm[3]		<= 3'b000;
+								perm[4]		<= 3'b000;
+								perm[5]		<= 3'b000;
+								perm[6]		<= 3'b000;
+								perm[7]		<= 3'b000;
+							end
 							default: 			next_mode	<= next_mode;
 						endcase
 					end
@@ -120,11 +168,49 @@ module Top (
 					6'b000001:	mode <= `Song_GameMode;
 					default:	mode <= `GameMode;
 				endcase
-			else if(mode == `SettingMode		)
-				case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc})
-					6'b000001:	mode <= `ChooseModePage;
-					default:	mode <= `SettingMode;
-				endcase
+			else if(mode == `SettingMode		) begin
+				if (setting_cnt == 3'b000 && perm[0] != 0) begin
+					mode <= `ChooseModePage;
+				end
+				else begin
+					case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc, pose_buts})
+						14'b00_0001_0000_0000:	mode <= `ChooseModePage;
+						14'b00_0000_0000_0001: begin
+							{perm[0], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_0000_0010: begin
+							{perm[1], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_0000_0100: begin
+							{perm[2], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_0000_1000: begin
+							{perm[3], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_0001_0000: begin
+							{perm[4], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_0010_0000: begin
+							{perm[5], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_0100_0000: begin
+							{perm[6], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						14'b00_0000_1000_0000: begin
+							{perm[7], setting_cnt} <= {setting_cnt, setting_cnt + 1};
+							mode <= `SettingMode;
+						end
+						default:	mode <= `SettingMode;
+					endcase
+				end
+			end
 			else if(mode == `Song_PlayMode 	)
 				case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc})
 					6'b100000:	mode <= `PlayMode;
