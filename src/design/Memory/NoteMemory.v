@@ -19,27 +19,30 @@ reg [`MAX_DEPTH_BIT-1:0]     write_pointer;              // position of write po
 reg                         pre_write_en;               // previous state of write_en
 
 initial begin
-    last_note = 0;
-    count = 0;
-    read_pointer = 0;
-    write_pointer = 0;
+    last_note = `DATA_WIDTH'b0;
+    count = `MAX_DEPTH_BIT'b0;
+    read_pointer = `MAX_DEPTH_BIT'b0;
+    write_pointer = `MAX_DEPTH_BIT'b0;
     pre_write_en = 0;
+    output_ready = 0; 
+    data_out = `DATA_WIDTH'b0;
 end
 
 always @(posedge clk)
 begin
     // reset whole memory module
     if(~rst_n) begin
-        count <= 0;
-        last_note <= 0;
-        read_pointer <= 0;
-        write_pointer <= 0;
+        count <= `MAX_DEPTH_BIT'b0;
+        last_note <= `DATA_WIDTH'b0;
+        read_pointer <= `MAX_DEPTH_BIT'b0;
+        write_pointer <= `MAX_DEPTH_BIT'b0;
         output_ready <= 0;
         pre_write_en <= 0;
+        data_out <= `DATA_WIDTH'b0;
         
     //reset the read pointer for a new reading operation
     end else if(read_rst) begin
-        read_pointer <= 0;
+        read_pointer <= `MAX_DEPTH_BIT'b0;
         output_ready <= 0;
         
     end else begin

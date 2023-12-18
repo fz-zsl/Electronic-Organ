@@ -1,3 +1,5 @@
+`define BIT_LENGTH 30
+
 // frequency of notes in Hz
 //Lowest octave
 `define C3 763359
@@ -25,3 +27,5 @@
 `define G4 127551
 `define A4 113636
 `define B4 101215
+
+`define C5 95652

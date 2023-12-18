@@ -1,33 +1,36 @@
 module FreeMode(
-    input sys_clk, rst_n,
-    input PS2_clk, PS2_data,
-    output pwm, sd,
-    output [7:0] note
+	input           clk,
+	input           rst_n,
+	input	[7:0]	buts,
+	input 		 	but_up,
+	input 		 	but_center,
+	input 		 	but_down,
+	output			pwm,
+	output			sd,
+	output reg 	[1:0] 	octave
 );
-    
-    wire PS2_trig, PS2_ovf;
-    wire [7:0] oData;
-    
-    PS2Decoder PS2Decoder_dut(
-        .sys_clk(sys_clk), .rst_n(rst_n),
-        .ps2_clk(PS2_clk), .ps2_data(PS2_data), .in_en(1'b1),
-        .data(oData), .out_en(PS2_trig), .overflow(PS2_ovf)
-    );
+	
 
-    Key2Note Key2Note_dut(
-        .clk(sys_clk), .rst_n(rst_n), .key(PS2_trig ? oData : 0),
-        .note(note)
-    );
+	always @(posedge clk or negedge rst_n) begin
+		if (~rst_n) begin
+			octave <= 2'b00;
+		end
+		else begin
+			case ({but_up, but_center, but_down})
+				3'b100: octave <= 2'b10;
+				3'b010: octave <= 2'b00;
+				3'b001: octave <= 2'b01;
+				default: octave <= octave;
+			endcase
+		end
+	end
 
-    wire [1:0] octave;
-    Octave Octave_dut(
-        .clk(sys_clk), .rst_n(rst_n), .key(PS2_trig ? oData : 0),
-        .octave(octave)
-    );
-    
-    SoundTop SoundTop_dut(
-        .clk(sys_clk), .rst_n(rst_n), .shift(octave),
-        .notes(note),
-        .pwm(pwm), .sd(sd)
-    );
+	SoundTop SoundTop_inst_free(
+		.clk		(clk																		),
+		.rst_n		(rst_n																		),
+		.shift		(octave																		),
+		.notes		({buts[0], buts[1], buts[2], buts[3], buts[4], buts[5], buts[6], buts[7]}	),
+		.pwm		(pwm																		),
+		.sd			(sd																			)
+	);
 endmodule

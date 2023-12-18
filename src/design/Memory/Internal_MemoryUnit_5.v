@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 `include "MemoryPara.v"
-module Internal_MemoryUnit_4(
+module Internal_MemoryUnit_5(
     input wire                          clk,
     input wire                          rst_n,
     input wire                          write_en,
@@ -22,21 +22,21 @@ wire                    read_rst_in;
 Internal_NoteMemory_1 Note(clk, rst_n, write_en, read_en, read_rst_in, data_in, note_data_out, note_output_ready);
 Internal_MusicMemory_1 Music(clk, rst_n, write_en, read_en, read_rst_in, data_in, music_data_out, music_output_ready, duration);
 
-assign read_rst_in = ((current_state == `AUTOPLAY || current_state == `LEARNING) ? 0 : 1) | read_rst;
+assign read_rst_in = ((current_state == `AUTOPLAY | current_state == `LEARNING | current_state == `GAME) ? 0 : 1) | read_rst;
 
 always @(*)
 begin
     case(current_state)
-        `AUTOPLAY: 
+        `AUTOPLAY, `GAME, `LEARNING: 
         begin
             data_out = music_data_out; 
             output_ready = music_output_ready;
         end
-        `LEARNING:
+        /*`LEARNING:
         begin
             data_out = note_data_out; 
             output_ready = note_output_ready;
-        end
+        end*/
         default:
         begin
             data_out = 0;

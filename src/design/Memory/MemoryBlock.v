@@ -63,60 +63,39 @@ assign data_out = unit_data_out[select];
 assign output_ready = unit_output_ready[select];
 assign duration = unit_duration[select];
 
-initial begin
-    custom_rst_n[0] = 1;
-    custom_rst_n[1] = 1;
-    custom_rst_n[2] = 1;
-    custom_rst_n[3] = 1;
-    custom_rst_n[4] = 1;
-    custom_rst_n[5] = 1;
-    custom_rst_n[6] = 1;
-    custom_rst_n[7] = 1;
-    custom_rst_n[8] = 1;
-end
-
-always @(posedge save)
-begin
-    unit_status[next] <= 1;
-    unit_status[(next  == `MAX_MEMORY ? `PRE_WRITTEN_COUNT : next + 1)] <= 0;
-    custom_rst_n[(next  == `MAX_MEMORY ? `PRE_WRITTEN_COUNT : next + 1)] <= 0;
-    next <= (next  == `MAX_MEMORY ? `PRE_WRITTEN_COUNT : next + 1);
-    if(~full_flag) begin
-        count <= count + 1;
-    end
-end
-
-always @(negedge save)
-begin
-    custom_rst_n[next] <= 1;
-end
-
-always @(posedge discard)
-begin
-    custom_rst_n[next] <= 0;
-end
-
-always @(negedge discard)
-begin
-    custom_rst_n[next] <= 1;
-end
-
-always @(posedge clk) 
-begin
+always @(negedge rst_n or negedge save) begin
     if(~rst_n) begin
-        count <= `PRE_WRITTEN_COUNT;
         next <= `PRE_WRITTEN_COUNT;
+        count <= `PRE_WRITTEN_COUNT;
         unit_status <= (1<<`PRE_WRITTEN_COUNT) - 1;
-        custom_rst_n[0] <= 1;
-        custom_rst_n[1] <= 1;
-        custom_rst_n[2] <= 1;
-        custom_rst_n[3] <= 1;
-        custom_rst_n[4] <= 1;
-        custom_rst_n[5] <= 1;
-        custom_rst_n[6] <= 1;
-        custom_rst_n[7] <= 1;
-        custom_rst_n[8] <= 1;
+    end else begin
+        unit_status[next] <= 1;
+        unit_status[(next  == `MAX_MEMORY ? `PRE_WRITTEN_COUNT : next + 1)] <= 0;
+        next <= (next  == `MAX_MEMORY ? `PRE_WRITTEN_COUNT : next + 1);
+        if(~full_flag) begin
+            count <= count + 1;
+        end
     end
 end
+
+always @* begin
+    if(discard) begin
+        custom_rst_n[next] = 0;
+    end else
+    if(save)begin
+        custom_rst_n[(next  == `MAX_MEMORY ? `PRE_WRITTEN_COUNT : next + 1)] = 0;
+    end else begin
+        custom_rst_n[0] = 1;
+        custom_rst_n[1] = 1;
+        custom_rst_n[2] = 1;
+        custom_rst_n[3] = 1;
+        custom_rst_n[4] = 1;
+        custom_rst_n[5] = 1;
+        custom_rst_n[6] = 1;
+        custom_rst_n[7] = 1;
+        custom_rst_n[8] = 1;
+    end
+end
+
 
 endmodule

@@ -52,6 +52,8 @@ assign memory[31] = 10'b0000001000;
 
 assign duration = count;
 
+parameter LOCAL_SAMPLE_INTERVAL = 50000000;
+
 // Initialize internal signals
 initial begin
     count = 32;
@@ -72,7 +74,7 @@ always @(posedge clk) begin
                 output_ready <= 1;
                 data_out <= memory[read_pointer];
                 read_sample_counter <= read_sample_counter + 1;
-                if (read_sample_counter == `SAMPLE_INTERVAL) begin
+                if (read_sample_counter == LOCAL_SAMPLE_INTERVAL) begin
                     read_sample_counter <= 1;
                     read_pointer <= read_pointer + 1;
                 end

@@ -28,6 +28,14 @@ module SoundTop(
         if(~rst_n) begin
             index <= 3'b0;
             cnt <= 3'b0;
+            buffer[0] <= 3'b0;
+            buffer[1] <= 3'b0;
+            buffer[2] <= 3'b0;
+            buffer[3] <= 3'b0;
+            buffer[4] <= 3'b0;
+            buffer[5] <= 3'b0;
+            buffer[6] <= 3'b0;
+            buffer[7] <= 3'b0;
         end
         else if(flag_state == 1'b0 || flag_switch == 1'b1) begin//Reset the Buffer
             index <= 3'b0;
@@ -60,7 +68,7 @@ module SoundTop(
     end
     
     wire        [2:0]       division;   
-    ClockDivider ClockDivider_inst(
+    SoundClkDivider SoundClkDivider_inst(
         .clk        (clk),
         .rst_n      (rst_n),
         .note_number(num),
@@ -69,9 +77,9 @@ module SoundTop(
     );
     
     wire        [2:0]       note;//The note that the tone_generator generates.  
-    ToneGenerator ToneGenerator_inst(
+    SoundToneGenerator SoundToneGenerator_inst(
         .clk        (clk),
-        .rst_n      (rst_n),
+        .rst_n      (rst_n && notes != 3'b000),
 	    .shift      (shift),
         .note       (note), 
         .en         (flag_state),
@@ -79,7 +87,5 @@ module SoundTop(
     );
     
     //Read the notes from the buffer
-    assign note = buffer[division];
-
-    
+    assign note = buffer[division] - 1;
 endmodule

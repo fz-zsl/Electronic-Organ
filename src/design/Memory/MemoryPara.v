@@ -1,0 +1,13 @@
+`define DATA_WIDTH          10   
+`define MAX_DEPTH           1024
+`define MAX_DEPTH_BIT       10
+`define SAMPLE_INTERVAL     6250000
+`define MAX_SAMPLE_INTERVAL 32
+`define AUTOPLAY            8'b0001_0000
+`define LEARNING            8'b0000_1000
+`define GAME                8'b0000_0100
+`define FREE                8'b0010_0000
+`define STATE_WIDTH         8
+`define MAX_MEMORY          8
+`define MAX_MEMORY_BIT      3
+`define PRE_WRITTEN_COUNT   5
