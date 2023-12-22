@@ -13,3 +13,9 @@
 `define Song_LearnMode	8'b0000_1001
 `define Song_GameMode	8'b0000_0101
 `define UserRanking		8'b0000_0000
+
+
+`define maxUsernameLength 8
+`define maxUserNum        10
+`define maxSongnameLength 20
+`define maxSongNum        10

@@ -40,7 +40,7 @@ module panel_with_chars #(
     input   wire                rst_n       ,
     input   wire    [9:0]       pos_x       ,
     input   wire    [9:0]       pos_y       ,
-    input   wire    [8*50-1:0]  string      ,
+    input   wire    [8*char_count-1:0]  string      ,
     output  wire                enable      ,
     output  reg     [23:0]      pos_data
 );
@@ -68,7 +68,7 @@ module panel_with_chars #(
     wire    [3:0]   count   ;
 
     assign  count   =  (char_enable) ? (pos_x - panel_start_x - char_start_x) / char_width : 0;
-    assign  ascii   =  string[8*(13 - count)-1 -:8];
+    assign  ascii   =  string[8*(char_count - count)-1 -:8];
     assign  x_over  =  (pos_x - panel_start_x - char_start_x) % char_width;
     assign  y_over  =  (pos_y - panel_start_y - char_start_y) % char_height; 
 

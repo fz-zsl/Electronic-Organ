@@ -11,43 +11,41 @@ module notes_display#(
     parameter  start_point_x_A  =   432,
     parameter  start_point_x_B  =   496,
     
-    parameter  start_point_y    =   224
+    parameter  start_point_y    =   416
 )
 (
     input   wire            vga_clk     ,
-    input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,
     input   wire    [9:0]   pos_y       ,
-    input   wire    [7:0]   note        ,
-    output  reg     [23:0]  pos_data      
-    );
+    output  reg     [23:0]  pos_data    
+);
     
 //The following instantiation has used IP catalog, therefore need to instantiate ROM that has initialized loading COE files.
-   //------------------------Note_C_Display------------------------//    
-        wire [23:0] data_output_C   ;
-        wire [10:0] data_addr_C     ;
-        wire        enabled_C       ;
-        blk_mem_C   blk_mem_C_inst(.addra   (data_addr_C),
-                                   .clka    (vga_clk)   ,
-                                   .douta   (data_output_C),
-                                   .ena     (1)         
-                                   );
-        assign enabled_C   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_C < width) );                               
-        assign data_addr_C = enabled_C ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_C ) ) : 0;
+//------------------------Note_C_Display------------------------//    
+    wire [23:0] data_output_C   ;
+    wire [10:0] data_addr_C     ;
+    wire        enabled_C       ;
+    blk_mem_C   blk_mem_C_inst(.addra   (data_addr_C),
+                               .clka    (vga_clk)   ,
+                               .douta   (data_output_C),
+                               .ena     (1)         
+                               );
+    assign enabled_C   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_C < width) );                               
+    assign data_addr_C = enabled_C ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_C ) ) : 0;
     
-    //------------------------Note_D_Display------------------------//    
-        wire [23:0] data_output_D   ;
-        wire [10:0] data_addr_D     ;
-        wire        enabled_D       ;
-        blk_mem_D   blk_mem_D_inst(.addra   (data_addr_D),
-                                   .clka    (vga_clk)   ,
-                                   .douta   (data_output_D),
-                                   .ena     (1)         
-                                   );
-        assign enabled_D   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_D < width) );                               
-        assign data_addr_D = enabled_D ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_D ) ) : 0;
+//------------------------Note_D_Display------------------------//    
+    wire [23:0] data_output_D   ;
+    wire [10:0] data_addr_D     ;
+    wire        enabled_D       ;
+    blk_mem_D   blk_mem_D_inst(.addra   (data_addr_D),
+                               .clka    (vga_clk)   ,
+                               .douta   (data_output_D),
+                               .ena     (1)         
+                               );
+    assign enabled_D   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_D < width) );                               
+    assign data_addr_D = enabled_D ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_D ) ) : 0;
                              
-    //------------------------Note_E_Display------------------------//    
+//------------------------Note_E_Display------------------------//    
         wire [23:0] data_output_E   ;
         wire [10:0] data_addr_E     ;
         wire        enabled_E       ;                         
@@ -59,7 +57,7 @@ module notes_display#(
         assign enabled_E   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_E < width) );                               
         assign data_addr_E = enabled_E ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_E ) ) : 0;
                                                       
-    //------------------------Note_F_Display------------------------//    
+//------------------------Note_F_Display------------------------//    
         wire [23:0] data_output_F   ;
         wire [10:0] data_addr_F     ;
         wire        enabled_F       ;                                                  
@@ -71,7 +69,7 @@ module notes_display#(
         assign enabled_F   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_F < width) );                               
         assign data_addr_F = enabled_F ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_F ) ) : 0;
                                                                                                         
-    //------------------------Note_G_Display------------------------//    
+//------------------------Note_G_Display------------------------//    
         wire [23:0] data_output_G   ;
         wire [10:0] data_addr_G     ;
         wire        enabled_G       ;                                                                           
@@ -83,7 +81,7 @@ module notes_display#(
         assign enabled_G   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_G < width) );                               
         assign data_addr_G = enabled_G ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_G ) ) : 0;
                           
-    //------------------------Note_A_Display------------------------//    
+//------------------------Note_A_Display------------------------//    
         wire [23:0] data_output_A   ;
         wire [10:0] data_addr_A     ;
         wire        enabled_A       ;                                                                                                   
@@ -95,7 +93,7 @@ module notes_display#(
         assign enabled_A   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_A < width) );                               
         assign data_addr_A = enabled_A ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_A ) ) : 0;
     
-    //------------------------Note_B_Display------------------------//    
+//------------------------Note_B_Display------------------------//    
         wire [23:0] data_output_B   ;
         wire [10:0] data_addr_B     ;
         wire        enabled_B       ;                                                                                                   
@@ -106,21 +104,22 @@ module notes_display#(
                                    );
         assign enabled_B   = ( (pos_y - start_point_y < height) && (pos_x - start_point_x_B < width) );                               
         assign data_addr_B = enabled_B ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_B ) ) : 0;
-
+    
+                  
     always @(*) begin
-        if(enabled_A && note[5] == 1'b1)
+        if(enabled_A)
             pos_data <= data_output_A;
-        else if(enabled_B && note[6] == 1'b1)
+        else if(enabled_B)
             pos_data <= data_output_B;
-        else if(enabled_C && note[0] == 1'b1)
+        else if(enabled_C)
             pos_data <= data_output_C;
-        else if(enabled_D && note[1] == 1'b1)
+        else if(enabled_D)
             pos_data <= data_output_D;
-        else if(enabled_E && note[2] == 1'b1)
+        else if(enabled_E)
             pos_data <= data_output_E;
-        else if(enabled_F && note[3] == 1'b1)
+        else if(enabled_F)
             pos_data <= data_output_F;
-        else if(enabled_G && note[4] == 1'b1)
+        else if(enabled_G)
             pos_data <= data_output_G;
         else    
             pos_data <= 24'hFFFFFF;                            

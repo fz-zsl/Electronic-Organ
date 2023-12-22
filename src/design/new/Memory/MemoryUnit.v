@@ -13,13 +13,10 @@ module MemoryUnit(
     output wire [`MAX_DEPTH_BIT-1:0]     duration
 );
 
-wire [`DATA_WIDTH-1:0]   note_data_out;
 wire [`DATA_WIDTH-1:0]   music_data_out;
-wire                    note_output_ready;
 wire                    music_output_ready;
 wire                    read_rst_in;
 
-NoteMemory Note(clk, rst_n, write_en, read_en, read_rst_in, data_in, note_data_out, note_output_ready);
 MusicMemory Music(clk, rst_n, write_en, read_en, read_rst_in, data_in, music_data_out, music_output_ready, duration);
 
 assign read_rst_in = ((current_state == `AUTOPLAY || current_state == `LEARNING || current_state == `GAME || current_state == `FREE) ? 0 : 1) | read_rst;
@@ -32,11 +29,6 @@ begin
             data_out = music_data_out; 
             output_ready = music_output_ready;
         end
-        /*`LEARNING:
-        begin
-            data_out = note_data_out; 
-            output_ready = note_output_ready;
-        end*/
         default:
         begin
             data_out = 0;

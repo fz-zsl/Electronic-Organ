@@ -6,6 +6,7 @@
 `define tub_S       8'b10110110
 `define tub_N       8'b11101100
 `define tub_G       8'b10111100
+`define tub_C       8'b10011100
 `define tub_nil     8'b00000000
 `define tub_0       8'b11111100
 `define tub_1       8'b01100000

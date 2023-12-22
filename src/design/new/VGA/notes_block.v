@@ -15,7 +15,7 @@ module vga_pic #(
     parameter  start_point_x_A  =   432,
     parameter  start_point_x_B  =   496,
     
-    parameter  block_color      =   24'b0,
+    parameter  block_color      =   24'b0
 )
 (
     input   wire            vga_clk     ,

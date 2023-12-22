@@ -18,8 +18,6 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
-
 module SettingMode_vga #(
 parameter  width            =   32,
 parameter  height           =   32,
@@ -32,12 +30,13 @@ parameter  start_point_x_G  =   368,
 parameter  start_point_x_A  =   432,
 parameter  start_point_x_B  =   496,
 
-parameter  start_point_y    =   416
+parameter  start_point_y    =   200
 )
 (
 input   wire            vga_clk     ,
 input   wire    [9:0]   pos_x       ,
 input   wire    [9:0]   pos_y       ,
+input           [2:0]   setting_cnt ,
 output  reg     [23:0]  pos_data    
 );
 
@@ -128,19 +127,19 @@ assign data_addr_D = enabled_D ? ( (pos_y - start_point_y ) * width + (pos_x - s
 
               
 always @(*) begin
-    if(enabled_A)
+    if(enabled_A && setting_cnt == 3'd6)
         pos_data <= data_output_A;
-    else if(enabled_B)
+    else if(enabled_B && setting_cnt == 3'd7)
         pos_data <= data_output_B;
-    else if(enabled_C)
+    else if(enabled_C && setting_cnt == 3'd1)
         pos_data <= data_output_C;
-    else if(enabled_D)
+    else if(enabled_D && setting_cnt == 3'd2)
         pos_data <= data_output_D;
-    else if(enabled_E)
+    else if(enabled_E && setting_cnt == 3'd3) 
         pos_data <= data_output_E;
-    else if(enabled_F)
+    else if(enabled_F && setting_cnt == 3'd4)
         pos_data <= data_output_F;
-    else if(enabled_G)
+    else if(enabled_G && setting_cnt == 3'd5)
         pos_data <= data_output_G;
     else    
         pos_data <= 24'hFFFFFF;                            

@@ -1,3 +1,4 @@
+`include "TopParams.v"
 module Top (
 	input 				sys_clk, 
 	input 				rst_n,
@@ -8,20 +9,25 @@ module Top (
 	input				but_right,
 	input				but_esc,
 	input	[7:0]		buts,
-	input   [7:0]       switch,
-	output	reg			sd,
-	output	reg			pwm,
-	output	[7:0]		tub_sel,
-	output	[7:0]		tub_data1,
-	output	[7:0]		tub_data2,
+	input               recording,
+	input               delete,
 	output 	[7:0]   	LED,
-	output	[7:0]		Debug_LED
-);
-	//------------------TODO------------------//
-	wire recording, delete;
-	assign recording = switch[0];
-	assign delete = switch[1];
-
+	output	[7:0]		Debug_LED,	
+	output	[7:0]		tub_sel,
+    output  [7:0]       tub_data1,
+    output  [7:0]       tub_data2,
+	
+	//Output for Sound
+	output	    reg			            pwm,
+	output	    reg			            sd,
+	
+	//Output for VGA
+	output      wire                    hsync       ,   //Horizontal Sync Signal
+    output      wire                    vsync       ,   //Vertical Sync Signal
+    output      wire        [3:0]       color_red   ,   //RGB Red data
+    output      wire        [3:0]       color_green ,   //RGB Green data
+    output      wire        [3:0]       color_blue      //RGB Blue data
+);  
     //------------------Clk Divider------------------//
 	wire slow_clk;
 	ClkDivider ClkDivider_inst(
@@ -52,14 +58,12 @@ module Top (
 	wire nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc;
 	wire [7:0] pres_buts, pose_buts, nege_buts;
 	KeysDebouncer14 KeysDebouncer14_inst(
-		.slow_clk		(slow_clk																			),
-		.rst_n			(rst_n																				),
-		.but_in			({but_center,  but_up,  but_down,  but_left,  but_right,  ~but_esc,
-						~buts[perm_conf[7]], ~buts[perm_conf[6]], ~buts[perm_conf[5]], ~buts[perm_conf[4]],
-						~buts[perm_conf[3]], ~buts[perm_conf[2]], ~buts[perm_conf[1]], ~buts[perm_conf[0]]}	),
-		.but_active		({pres_center, pres_up, pres_down, pres_left, pres_right, pres_esc, pres_buts}		),
-		.but_posedge	({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc, pose_buts}		),
-		.but_negedge	({nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc, nege_buts}		)
+		.slow_clk		(slow_clk																		),
+		.rst_n			(rst_n																			),
+		.but_in			({but_center,  but_up,  but_down,  but_left,  but_right,  ~but_esc, ~buts}		),
+		.but_active		({pres_center, pres_up, pres_down, pres_left, pres_right, pres_esc, pres_buts}	),
+		.but_posedge	({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc, pose_buts}	),
+		.but_negedge	({nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc, nege_buts}	)
 	);
 	
 	wire                     press_recording;
@@ -80,30 +84,9 @@ module Top (
 
 	//------------------Finite State Machine-----------------//
 	`include "TopParams.v";
-	`include "TubParams.v";
 	reg		[7:0]		mode	= `WelcomePage;
 	reg		[7:0]		next_mode;
 	assign 	LED = mode;
-	wire tub_en = (mode == `FreeMode || mode == `LearnMode || mode == `GameMode || mode == `PlayMode
-					|| mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode);
-	reg [7:0] tub_in7, tub_in6, tub_in5, tub_in4, tub_in3, tub_in2, tub_in1, tub_in0;
-	TubDisplay TubDisplay_inst(
-		.sys_clk	(sys_clk	),
-		.rst_n		(rst_n		),
-		.data7		(tub_in7	),
-		.data6		(tub_in6	),
-		.data5		(tub_in5	),
-		.data4		(tub_in4	),
-		.data3		(tub_in3	),
-		.data2		(tub_in2	),
-		.data1		(tub_in1	),
-		.data0		(tub_in0	),
-		.en			(tub_en		),
-		.tub_sel	(tub_sel	),
-		.tub_data1	(tub_data1	),
-		.tub_data2	(tub_data2	)
-	);
-
 	always @(posedge slow_clk or negedge rst_n) begin
 		if (~rst_n) begin
 			mode <= `WelcomePage;
@@ -219,7 +202,14 @@ module Top (
 				endcase
 			else if(mode == `SettingMode		) begin
 				if (setting_cnt == 3'b111 && perm[0] != 0) begin
-					perm_conf <= perm;
+					perm_conf[0] <= perm[0];
+					perm_conf[1] <= perm[1];
+					perm_conf[2] <= perm[2];
+					perm_conf[3] <= perm[3];
+					perm_conf[4] <= perm[4];
+					perm_conf[5] <= perm[5];
+					perm_conf[6] <= perm[6];
+					perm_conf[7] <= perm[7];
 					mode <= `ChooseModePage;
 				end
 				else begin
@@ -284,39 +274,27 @@ module Top (
 		end
 	end
 
-	//------------------Song Repertoire------------------//
-	// parameter 			song_per_page 	= 4;
-	reg 				repertoire_page = 0;
-	reg 	[1:0] 		page_song_id 	= 0;
-
-	always @(posedge sys_clk or negedge rst_n) begin
-		if(~rst_n) begin
-			repertoire_page <= 1'b0;
-			page_song_id 	<= 2'b00;
-		end
-		else begin // We only use left right down because center and up are chosen.
-			if(mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode) begin
-				if(pose_up)
-					page_song_id <= (page_song_id == 2'b00) ? 2'b11 : page_song_id - 1;
-				else if(pose_down)
-					page_song_id <= (page_song_id == 2'b11) ? 2'b00 : page_song_id + 1;
-				else if(pose_left || pose_right)
-					repertoire_page <= ~repertoire_page;
-				else begin
-					page_song_id <= page_song_id;
-					repertoire_page <= repertoire_page;
-				end
-			end
-		end
-	end
-
-	wire 	[2:0] 		visible_song_id;
-	wire   	[1:0]       octave;
-	wire 				pwm_fm;
-	wire 				sd_fm;
-	assign  visible_song_id = {repertoire_page, page_song_id};
-
 	//------------------Tub Display------------------//
+	`include "TubParams.v";
+	wire tub_en = (mode == `FreeMode || mode == `LearnMode || mode == `GameMode || mode == `PlayMode
+					|| mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode);
+	reg [7:0] tub_in7, tub_in6, tub_in5, tub_in4, tub_in3, tub_in2, tub_in1, tub_in0;
+	TubDisplay TubDisplay_inst(
+		.sys_clk	(sys_clk	),
+		.rst_n		(rst_n		),
+		.data7		(tub_in7	),
+		.data6		(tub_in6	),
+		.data5		(tub_in5	),
+		.data4		(tub_in4	),
+		.data3		(tub_in3	),
+		.data2		(tub_in2	),
+		.data1		(tub_in1	),
+		.data0		(tub_in0	),
+		.en			(tub_en		),
+		.tub_sel	(tub_sel	),
+		.tub_data1	(tub_data1	),
+		.tub_data2	(tub_data2	)
+	);
 	always @(posedge slow_clk or negedge rst_n) begin
 		if (~rst_n) begin
 			tub_in7 <= `tub_H;	tub_in6 <= `tub_E;	tub_in5 <= `tub_L;	tub_in4 <= `tub_L;
@@ -326,11 +304,15 @@ module Top (
 			tub_in7 <= `tub_H;	tub_in6 <= `tub_E;	tub_in5 <= `tub_L;	tub_in4 <= `tub_L;
 			tub_in3 <= `tub_O;	tub_in2 <= `tub_nil;tub_in1 <= `tub_nil;tub_in0 <= `tub_nil;
 		end
+		else if (mode == `ChooseModePage) begin
+		    tub_in7 <= `tub_C;	tub_in6 <= `tub_H;	tub_in5 <= `tub_O;	tub_in4 <= `tub_O;
+            tub_in3 <= `tub_S;  tub_in2 <= `tub_E;  tub_in1 <= `tub_nil;tub_in0 <= `tub_nil;
+        end
 		else if (mode == `Song_GameMode || mode == `Song_LearnMode || mode == `Song_PlayMode
 				|| mode == `GameMode || mode == `LearnMode || mode == `PlayMode) begin
 			tub_in7 <= `tub_S;	tub_in6 <= `tub_O;	tub_in5 <= `tub_N;	tub_in4 <= `tub_G;
 			tub_in3 <= `tub_nil;tub_in2 <= `tub_nil;tub_in1 <= `tub_0;
-			case (visible_song_id) begin
+			case (visible_song_id)
 				3'b000: tub_in0 <= `tub_1;
 				3'b001: tub_in0 <= `tub_2;
 				3'b010: tub_in0 <= `tub_3;
@@ -342,82 +324,224 @@ module Top (
 				default: tub_in0 <= `tub_0;
 			endcase
 		end
+		else begin
+		  tub_in7 <= `tub_nil; tub_in6 <= `tub_nil; tub_in5 <= `tub_nil; tub_in4 <= `tub_nil;
+          tub_in3 <= `tub_nil; tub_in2 <= `tub_nil; tub_in1 <= `tub_nil; tub_in0 <= `tub_nil;
+        end
 	end
 
+	
+
+	//------------------Song Repertoire------------------//
+	// parameter 			song_per_page 	= 4;
+	reg 				repertoire_page = 0;
+	reg 	[1:0] 		page_song_id 	= 0;
+    //There is a problem here
+	always @(posedge slow_clk or negedge rst_n) begin
+		if(~rst_n) begin
+			repertoire_page <= 1'b0;
+			page_song_id 	<= 2'b00;
+		end
+		else begin
+			if(mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode) begin
+				if(pose_up) begin
+					page_song_id <= (page_song_id == 2'b00) ? 2'b11 : page_song_id - 1;
+                    repertoire_page <= repertoire_page;
+                end
+				else if(pose_down) begin
+					page_song_id <= (page_song_id == 2'b11) ? 2'b00 : page_song_id + 1;
+                    repertoire_page <= repertoire_page;
+                end
+				else if(pose_left || pose_right) begin
+				    page_song_id <= page_song_id;
+					repertoire_page <= ~repertoire_page;
+			    end
+				else begin
+					page_song_id <= page_song_id;
+					repertoire_page <= repertoire_page;
+				end
+			end
+		end
+	end
+
+	wire   [2:0] 	   visible_song_id;
+	wire   [1:0]       octave;
+	wire               pwm_fm;
+	wire               sd_fm;
+	assign  visible_song_id = {repertoire_page, page_song_id};
+      
+    //------------------Memory------------------//
+    reg                       read_en;
+    wire                      read_rst = 0;
+    wire  [3:0]               select;
+    wire  [9:0]               data_out;
+    wire                      output_ready;
+    wire                      full_flag;      
+    wire  [3:0]               count;
+    wire  [3:0]               next;
+    wire  [9:0]               duration;
+    wire  [8:0]               unit_status;
+    
+	reg [97:0] song_name [0:8];
+	reg [97:0] visible_song_name [0:7];
+	reg [3:0]  real_song_id [0:7];
+
+	always @* begin
+	    visible_song_name[0] = song_name[0];
+	    real_song_id[0] = 0;
+	    visible_song_name[1] = song_name[1];
+	    real_song_id[1] = 1;
+	    visible_song_name[2] = song_name[2];
+	    real_song_id[2] = 2;
+	    visible_song_name[3] = song_name[3];
+	    real_song_id[3] = 3;
+	    visible_song_name[4] = song_name[4];
+	    real_song_id[4] = 4;
+	    case (unit_status[8:5])
+	        4'b0000:
+	            begin
+	                visible_song_name[5] = 98'b0;
+	                real_song_id[5] = 0;
+	                visible_song_name[6] = 98'b0;
+	                real_song_id[6] = 0;
+	                visible_song_name[7] = 98'b0;
+	                real_song_id[7] = 0;
+	            end
+	        4'b0001:
+	            begin
+	                visible_song_name[5] = song_name[5];
+	                real_song_id[5] = 5;
+	                visible_song_name[6] = 98'b0;
+	                real_song_id[6] = 0;
+	                visible_song_name[7] = 98'b0;
+	                real_song_id[7] = 0;
+	            end
+	        4'b0011:
+	            begin
+	                visible_song_name[5] = song_name[5];
+	                real_song_id[5] = 5;
+	                visible_song_name[6] = song_name[6];
+	                real_song_id[6] = 6;
+	                visible_song_name[7] = 98'b0;
+	                real_song_id[7] = 0;
+	            end
+	        4'b0111:
+	            begin
+	                visible_song_name[5] = song_name[5];
+	                real_song_id[5] = 5;
+	                visible_song_name[6] = song_name[6];
+	                real_song_id[6] = 6;
+	                visible_song_name[7] = song_name[7];
+	                real_song_id[7] = 7;
+	            end
+	        4'b1110:
+	            begin
+	                visible_song_name[5] = song_name[6];
+	                real_song_id[5] = 6;
+	                visible_song_name[6] = song_name[7];
+	                real_song_id[6] = 7;
+	                visible_song_name[7] = song_name[8];
+	                real_song_id[7] = 8;
+	            end
+	        4'b1101:
+	            begin
+	                visible_song_name[5] = song_name[5];
+	                real_song_id[5] = 5;
+	                visible_song_name[6] = song_name[7];
+	                real_song_id[6] = 7;
+	                visible_song_name[7] = song_name[8];
+	                real_song_id[7] = 8;
+	            end
+	        4'b1011:
+	            begin
+	                visible_song_name[5] = song_name[5];
+	                real_song_id[5] = 5;
+	                visible_song_name[6] = song_name[6];
+	                real_song_id[6] = 6;
+	                visible_song_name[7] = song_name[8];
+	                real_song_id[7] = 8;
+	            end
+	         default:
+	            begin
+	                visible_song_name[5] = 98'b0;
+	                real_song_id[5] = 0;
+	                visible_song_name[6] = 98'b0;
+	                real_song_id[6] = 0;
+	                visible_song_name[7] = 98'b0;
+	                real_song_id[7] = 0;
+	             end
+	    endcase
+	end
+
+	assign select = real_song_id[visible_song_id];
+
+
+    MemoryBlock MemoryBlock_inst(
+        .clk                    (sys_clk),
+        .rst_n                  (rst_n),
+        .write_en               (press_recording),
+        .read_en                (read_en),
+        .read_rst               (read_rst),
+        .current_state          (mode),
+        .select                 (select),
+        .data_in                ({pres_buts[0], pres_buts[1], pres_buts[2], pres_buts[3], pres_buts[4], pres_buts[5], pres_buts[6], pres_buts[7], octave}),
+        .save                   (pres_right),
+        .discard                (pres_left),
+        .delete                 (press_delete),
+        .data_out               (data_out),
+        .output_ready           (output_ready),
+        .full_flag              (full_flag),
+        .count                  (count),
+        .next                   (next),
+        .duration               (duration),
+        .unit_status            (unit_status)
+    );
+    
 	//------------------Free Mode------------------//
-	FreeMode FreeMode_inst(
-		.clk		(sys_clk			),
-		.rst_n		(mode == `FreeMode| mode == `LearnMode),
-		.buts		(pres_buts			),
-		.but_up		(pose_up			),
-		.but_center	(pose_center		),
-		.but_down	(pose_down			),
-		.pwm		(pwm_fm				),
-		.sd			(sd_fm					),
-		.octave     (octave             )
-	);
-	
-	reg                      read_en;
-	wire                      read_rst = 0;
-	wire  [3:0]               select = 4'b0101;
-	wire  [9:0]               data_out;
-	wire                      output_ready;
-	wire                      full_flag;      
-	wire  [3:0]               count;
-	wire  [3:0]               next;
-	wire  [9:0]               duration;
-	wire  [8:0]               unit_status;
-	
-	//------------------Memory------------------//
-	MemoryBlock MemoryBlock_inst(
-		.clk(sys_clk),
-		.rst_n(rst_n),
-		.write_en(press_recording),
-		.read_en(read_en),
-		.read_rst(read_rst),
-		.current_state(mode),
-		.select(select),
-		.data_in({pres_buts[0], pres_buts[1], pres_buts[2], pres_buts[3], pres_buts[4], pres_buts[5], pres_buts[6], pres_buts[7], octave}),
-		.save(pres_right),
-		.discard(pres_left),
-		.delete(press_delete),
-		.data_out(data_out),
-		.output_ready(output_ready),
-		.full_flag(full_flag),
-		.count(count),
-		.next(next),
-		.duration(duration),
-		.unit_status(unit_status)
-	);
-        
+    FreeMode FreeMode_inst(
+        .clk                    (sys_clk            ),
+        .rst_n                  (mode == `FreeMode| mode == `LearnMode),
+        .buts                   (pres_buts          ),
+        .but_up                 (pose_up            ),
+        .but_center             (pose_center        ),
+        .but_down               (pose_down          ),
+        .pwm                    (pwm_fm             ),
+        .sd                     (sd_fm              ),
+        .octave                 (octave             )
+    );
+    
+    //------------------Play Mode------------------//
     wire pwm_pm;
     wire sd_pm;
     wire read_en_pm;
+    wire [9:0] vga_bottom_pm;
     PlayMode PlayMode_inst(
-        .clk(sys_clk),
-        .rst_n(mode == `PlayMode),
-        .output_ready(output_ready),
-        .data_out(data_out),
-        .read_en(read_en_pm),
-        .pwm(pwm_pm),
-        .sd(sd_pm)
+        .clk                (sys_clk),
+        .isMode             (mode == `PlayMode),
+        .vga_bottom_pm      (vga_bottom_pm),
+        .read_en            (read_en_pm),
+        .pwm                (pwm_pm),
+        .sd                 (sd_pm)
     );
     
+    //------------------Learn Mode------------------//
     wire read_en_lm;
+    wire [9:0] vga_bottom_lm;
     LearnMode LearnMode_inst(
         .clk(sys_clk),
         .rst_n(mode == `LearnMode),
         // .buts(pose_buts),
         .buts(pres_buts),
         .octave(octave),
-        .data_out(data_out),
-        .output_ready(output_ready),
+        .data_out(vga_bottom_lm),
         .read_en(read_en_lm)
     );
     
+    //------------------Game Mode------------------//
     wire pwm_gm;
     wire sd_gm;
     wire read_en_gm;
+    wire [9:0] vga_bottom_gm;
     GameMode GameMode_inst(
         .clk(sys_clk),
         .rst_n(mode == `GameMode),
@@ -428,15 +552,52 @@ module Top (
         .sd(sd_gm)
     );
 	
+	//------------------PWM Choose Panel------------------//
     always @* begin
         case(mode) 
-            `PlayMode:	begin pwm = pwm_pm; sd = sd_pm; read_en = read_en_pm; end
-            `FreeMode:	begin pwm = pwm_fm; sd = sd_fm; read_en = 0; end
-            `LearnMode:	begin pwm = pwm_fm; sd = sd_fm; read_en = read_en_lm; end
-            `GameMode:	begin pwm = pwm_gm; sd = sd_gm; read_en = read_en_gm; end
-            default:	begin pwm = 0; sd = 0; read_en = 0; end
+            `PlayMode: begin pwm = pwm_pm; sd = sd_pm; read_en = read_en_pm; end
+            `FreeMode: begin pwm = pwm_fm; sd = sd_fm; read_en = 0; end
+            `LearnMode: begin pwm = pwm_fm; sd = sd_fm; read_en = read_en_lm; end
+            `GameMode: begin pwm = pwm_gm; sd = sd_gm; read_en = read_en_gm; end
+            default: begin pwm = 0; sd = 0; read_en = 0; end
         endcase
     end
+
+    //------------------VGA_module------------------//
+    wire        [23:0]      color;
+    vga_top vga_inst(
+        //Input port
+        .sys_clk     (sys_clk),  //Input Clock: 100 MHz 
+        .sys_rst_n   (rst_n),   //Reset Signal: Low active 
+        .key         (pres_buts),
+        .mode        (mode),
+        .next_mode   (next_mode),
+        .shift       (octave),
+        .setting_cnt (setting_cnt),
+        //Song repertoire
+        .repertoire_page (repertoire_page),
+        .page_song_id    (page_song_id),
+        
+        //Playmode inputs and outputs
+        .output_ready    (output_ready),//input from memory
+        .data_out        (data_out), //input from memory
+        .vga_bottom_pm   (vga_bottom_pm), //output from vga
+        .vga_bottom_lm   (vga_bottom_lm),
+        .vga_bottom_gm   (vga_bottom_gm),
+        
+        //Output port
+        .hsync       (hsync),   //Horizontal Sync Signal
+        .vsync       (vsync),   //Vertical Sync Signal
+        .color       (color)    //RGB Data
+    );
     
-    assign Debug_LED = {data_out[2], data_out[3], data_out[4], data_out[5], data_out[6], data_out[7], data_out[8], data_out[9]};
+    
+    assign color_red = color[23:20];
+    assign color_green = color[15:12];
+    assign color_blue = color[7:4];
+    
+    //------------------Debug Output------------------//  
+    assign Debug_LED = {data_out[2], data_out[3], data_out[4], data_out[5], data_out[6], repertoire_page, page_song_id[1], page_song_id[0]};
+    
+    
 endmodule

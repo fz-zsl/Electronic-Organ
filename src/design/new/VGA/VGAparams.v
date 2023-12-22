@@ -14,6 +14,8 @@
 `define Song_GameMode	8'b0000_0101
 `define UserRanking		8'b0000_0000
 
+`define SAMPLE_INTERVAL     6250000
+
 `define BUFFER_LENGTH    20
 `define DISPLAY_LENGTH   384
 `define TOT_LENGTH       404

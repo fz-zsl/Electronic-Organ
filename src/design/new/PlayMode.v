@@ -18,28 +18,28 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
+`define DISPLAY_LENGTH   384
+
 module PlayMode(
     input                       clk,
-    input                       rst_n,
-    input                       output_ready,
-    input [9:0]                 data_out,
+    input                       isMode,
+    input [9:0]                 vga_bottom_pm,
     output                      read_en,
     output	                    pwm,
     output                      sd
     );
     
     wire [9:0] data_temp;
-    assign data_temp = (rst_n & output_ready) ? data_out : 9'b0;
-    assign read_en = rst_n;
-    
+    assign data_temp = (isMode) ? vga_bottom_pm : 9'b0;
+    assign read_en = isMode;
     
     SoundTop SoundTop_inst_play(
             .clk        (clk               ),
-            .rst_n      (rst_n             ),
+            .rst_n      (isMode            ),
             .shift      (data_temp[1:0]    ),
             .notes      (data_temp[9:2]    ),
             .pwm        (pwm               ),
             .sd         (sd                )
-        );
+    );
 endmodule
 

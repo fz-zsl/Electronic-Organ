@@ -45,7 +45,16 @@ parameter  start_point_x_A  =   432;
 parameter  start_point_x_B  =   496;
 
 parameter  start_point_y    =   416;
-        
+
+wire      [23:0]        background_color;  
+wire      [7:0]        transition;
+assign    transition = pos_y * 2 / 3 - 1;      
+parameter  high_pitch_color =    8'hFF;
+parameter  middle_pitch_color =  24'hFFFFFF;
+parameter  low_pitch_color =     8'hFF;
+
+assign background_color = (shift == 2'b10)? {transition, transition, high_pitch_color}: 
+                         ((shift == 2'b01)? {low_pitch_color, transition, transition} : middle_pitch_color);        
 
 //------------------------Note_block------------------------//    
 reg [`BUFFER_LENGTH:0]      buffer [7:0];
@@ -113,21 +122,20 @@ wire enable_G_flag = (pos_x - start_point_x_G < width) && (pos_x - start_point_x
 
 always @(*) begin
     if(enable_A_flag)
-        pos_data <= (display[5][pos_y - 1] == 1'b1) ? ((display[5][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[5][pos_y - 1] == 1'b1) ? ((display[5][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_B_flag)
-        pos_data <= (display[6][pos_y - 1] == 1'b1) ? ((display[6][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[6][pos_y - 1] == 1'b1) ? ((display[6][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_C_flag)
-        pos_data <= (display[0][pos_y - 1] == 1'b1) ? ((display[0][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[0][pos_y - 1] == 1'b1) ? ((display[0][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if (enable_D_flag)
-        pos_data <= (display[1][pos_y - 1] == 1'b1) ? ((display[1][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[1][pos_y - 1] == 1'b1) ? ((display[1][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_E_flag)
-        pos_data <= (display[2][pos_y - 1] == 1'b1) ? ((display[2][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[2][pos_y - 1] == 1'b1) ? ((display[2][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_F_flag)
-        pos_data <= (display[3][pos_y - 1] == 1'b1) ? ((display[3][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[3][pos_y - 1] == 1'b1) ? ((display[3][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_G_flag)
-        pos_data <= (display[4][pos_y - 1] == 1'b1) ? ((display[4][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): 24'hFFFFFF;
+        pos_data <= (display[4][pos_y - 1] == 1'b1) ? ((display[4][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else 
-        pos_data <= 24'hFFFFFF;
-                               
+        pos_data <= background_color;
 end       
 endmodule
