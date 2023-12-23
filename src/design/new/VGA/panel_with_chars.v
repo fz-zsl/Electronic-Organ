@@ -77,7 +77,7 @@ module panel_with_chars #(
         .ascii      (ascii   ),
         .x_over     (x_over  ),
         .y_over     (y_over  ),  
-        .pix_data   (char_output)
+        .pos_data   (char_output)
     );
 
 //---------------------------Pos_Data Output Decision Panel---------------------------//

@@ -72,10 +72,10 @@ module vga_pic(
             .pos_y       (pos_y),
             .repertoire_page (repertoire_page),
             .page_song_id    (page_song_id),
-            .songname_1  (songname_1),
-            .songname_2  (songname_2),
-            .songname_3  (songname_3),
-            .songname_4  (songname_4),
+           // .songname_1  (songname_1),
+           // .songname_2  (songname_2),
+           // .songname_3  (songname_3),
+           // .songname_4  (songname_4),
             .pos_data    (output_songchoosepanel) 
     );
 

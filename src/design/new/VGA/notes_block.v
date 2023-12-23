@@ -2,7 +2,7 @@
 `define DISPLAY_LENGTH   480
 `define TOT_LENGTH       500
 //This is the module that displays the falling blocks.
-module vga_pic #(
+module notes_block #(
     parameter  width            =   32,
     parameter  height           =   32,
     parameter  period           =   100000,

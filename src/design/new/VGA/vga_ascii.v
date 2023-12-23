@@ -31,7 +31,7 @@ module vga_ascii #(
 
     reg [7:0]   stored_ascii[0 : 256 * 16 - 1];
     
-    initial $readmemh("E:/notes/ASC16-96.txt",stored_ascii);
+    initial $readmemh("C:/Users/Cyphe/Documents/SUSTech Assignment/Term 3/Digital Logic/notes/ASC16-96.txt",stored_ascii);
     
     assign pos_data = (stored_ascii[16 * ascii + y_over][7 - x_over]==1) ? 24'h000000 : 24'hFFFFFF;
 
