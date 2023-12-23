@@ -28,6 +28,8 @@ module Top (
     output      wire        [3:0]       color_green ,   //RGB Green data
     output      wire        [3:0]       color_blue      //RGB Blue data
 );  
+	reg		[7:0]		 mode	     = `WelcomePage;
+    reg     [7:0]        next_mode;
     //------------------Clk Divider------------------//
 	wire slow_clk;
 	ClkDivider ClkDivider_inst(
@@ -76,16 +78,230 @@ module Top (
 	
 	wire                     press_delete;
     KeyDebouncer deleteDebouncer(
-           .slow_clk       (slow_clk        ),
-           .rst_n          (rst_n           ),
-           .but_in         (delete			),
-           .but_active     (press_delete    )
+       .slow_clk       (slow_clk        ),
+       .rst_n          (rst_n           ),
+       .but_in         (delete			),
+       .but_active     (press_delete    )
     );
+	
+	//------------------user login------------------//
+	// in top:
+	// `define maxUsernameLength 13
+	// `define maxUserNum 10
+	reg [(`maxUsernameLength * 8 - 1) : 0] username [(`maxUserNum - 1):0];
+	reg [(`maxUsernameLength * 8 - 1) : 0] newUsername;
+	reg [3:0] userNum;
+	reg [3:0] usernameInputPnt;
+	initial begin
+		username[0] = "admin        ";
+		username[1] = "xiaoyc       ";
+		username[2] = "wumx         ";
+		username[3] = "zhousl       ";
+		userNum = 4;
+		usernameInputPnt = 0;
+	end
 
+	always @(posedge slow_clk or negedge rst_n) begin
+		if (~rst_n) begin
+			username[0] = "admin        ";			
+			username[1] = "xiaoyc       ";
+			username[2] = "wumx         ";			
+			username[3] = "zhousl       ";
+			userNum = 4;
+			usernameInputPnt = 0;
+		end
+		else if (mode == `WelcomePage && username[userNum] != 0) begin
+			userNum <= userNum + 1;
+			usernameInputPnt <= 0;
+		end
+		else if (mode == `WelcomePage) begin
+			case (pres_buts)
+				8'h01: begin
+					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 6));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h02: begin
+                    newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 5));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h04: begin
+					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 4));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h08: begin
+					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 3));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h10: begin
+					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 2));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h20: begin
+					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 1));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h40: begin
+					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 0));
+					usernameInputPnt <= usernameInputPnt;
+				end
+				8'h80: begin
+					newUsername <= newUsername;
+					usernameInputPnt <= usernameInputPnt + 1;
+				end
+				default: begin
+					newUsername <= newUsername;
+					usernameInputPnt <= usernameInputPnt;
+				end
+		    endcase
+		end
+		else begin
+            username[0] <= username[0];
+            username[1] <= username[1];
+            username[2] <= username[2];
+            username[3] <= username[3];
+            username[4] <= username[4];
+            username[5] <= username[5];
+            username[6] <= username[6];
+            username[7] <= username[7];
+            username[8] <= username[8];
+            username[9] <= username[9];
+			newUsername <= 0;
+			userNum <= userNum;
+			usernameInputPnt <= 0;
+		end
+	end
+
+	//------------------song names------------------//
+	// `define maxSongnameLength 20
+	// `define maxSongNum 10
+	reg [(`maxSongnameLength * 8 - 1) : 0] songname [(`maxSongNum - 1):0];
+	initial begin
+		songname[0] = "Temp                ";
+		songname[1] = "Little Star         ";
+		songname[2] = "Jingle Bells        ";
+		songname[3] = "Happy New Year      ";
+		songname[4] = "Croatain Rhapsody   ";
+		songname[5] = "Canon               ";
+		songname[6] = "Fur Elise           ";
+		songname[7] = "Moonlight Sonata    ";
+		songname[8] = "Turkish March       ";
+	end
+
+	always @(posedge slow_clk or negedge rst_n) begin
+		if (~rst_n) begin
+			songname[0] <= "Temp                ";
+			songname[1] <= "Little Star         ";
+			songname[2] <= "Jingle Bells        ";
+			songname[3] <= "Happy New Year      ";
+			songname[4] <= "Croatain Rhapsody   ";
+			songname[5] <= "Canon               ";
+			songname[6] <= "Fur Elise           ";
+			songname[7] <= "Moonlight Sonata    ";
+			songname[8] <= "Turkish March       ";
+		end
+		else begin
+			songname[0] <= songname[0];
+			songname[1] <= songname[1];
+			songname[2] <= songname[2];
+			songname[3] <= songname[3];
+			songname[4] <= songname[4];
+			songname[5] <= songname[5];
+			songname[6] <= songname[6];
+			songname[7] <= songname[7];
+			songname[8] <= songname[8];
+		end
+	end
+
+	//------------------song owners------------------//
+	reg [(`maxUsernameLength * 8 - 1) : 0] song_owner [(`maxSongNum - 1):0];
+	initial begin
+		song_owner[0] = "admin";
+		song_owner[1] = "admin";
+		song_owner[2] = "admin";
+		song_owner[3] = "admin";
+		song_owner[4] = "admin";
+		song_owner[5] = "admin";
+		song_owner[6] = "admin";
+		song_owner[7] = "admin";
+		song_owner[8] = "admin";
+	end
+
+	always @(posedge slow_clk or negedge rst_n) begin
+		if (~rst_n) begin
+			song_owner[0] <= "admin";
+			song_owner[1] <= "admin";
+			song_owner[2] <= "admin";
+			song_owner[3] <= "admin";
+			song_owner[4] <= "admin";
+			song_owner[5] <= "admin";
+			song_owner[6] <= "admin";
+			song_owner[7] <= "admin";
+			song_owner[8] <= "admin";
+		end
+		else begin
+			song_owner[0] <= song_owner[0];
+			song_owner[1] <= song_owner[1];
+			song_owner[2] <= song_owner[2];
+			song_owner[3] <= song_owner[3];
+			song_owner[4] <= song_owner[4];
+			song_owner[5] <= song_owner[5];
+			song_owner[6] <= song_owner[6];
+			song_owner[7] <= song_owner[7];
+			song_owner[8] <= song_owner[8];
+		end
+	end
+
+    //------------------Song Visibility-----------------//
+	reg [2:0] all_song_id;
+	wire [(`maxSongNum - 1):0] song_visibility;
+	assign song_visibility[0] = (song_owner[0] == "admin" || song_owner[0] == username[userNum]);
+	assign song_visibility[1] = (song_owner[1] == "admin" || song_owner[1] == username[userNum]);
+	assign song_visibility[2] = (song_owner[2] == "admin" || song_owner[2] == username[userNum]);
+	assign song_visibility[3] = (song_owner[3] == "admin" || song_owner[3] == username[userNum]);
+	assign song_visibility[4] = (song_owner[4] == "admin" || song_owner[4] == username[userNum]);
+	assign song_visibility[5] = (song_owner[5] == "admin" || song_owner[5] == username[userNum]);
+	assign song_visibility[6] = (song_owner[6] == "admin" || song_owner[6] == username[userNum]);
+	assign song_visibility[7] = (song_owner[7] == "admin" || song_owner[7] == username[userNum]);
+    
+    //------------------Song Repertoire------------------//
+    // parameter             song_per_page     = 4;
+    reg                   repertoire_page = 0;
+    reg     [1:0]         page_song_id     = 0;
+    //There is a problem here
+    always @(posedge slow_clk or negedge rst_n) begin
+        if(~rst_n) begin
+            repertoire_page <= 1'b0;
+            page_song_id     <= 2'b00;
+        end
+        else begin
+            if(mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode) begin
+                if(pose_up) begin
+                    page_song_id <= (page_song_id == 2'b00) ? 2'b11 : page_song_id - 1;
+                    repertoire_page <= repertoire_page;
+                end
+                else if(pose_down) begin
+                    page_song_id <= (page_song_id == 2'b11) ? 2'b00 : page_song_id + 1;
+                    repertoire_page <= repertoire_page;
+                end
+                else if(pose_left || pose_right) begin
+                    page_song_id <= page_song_id;
+                    repertoire_page <= ~repertoire_page;
+                end
+                else begin
+                    page_song_id <= page_song_id;
+                    repertoire_page <= repertoire_page;
+                end
+            end
+        end
+    end
+
+    wire   [2:0]        song_id;
+    wire   [1:0]       octave;
+
+    assign  song_id = {repertoire_page, page_song_id};
+    
 	//------------------Finite State Machine-----------------//
 	`include "TopParams.v";
-	reg		[7:0]		mode	= `WelcomePage;
-	reg		[7:0]		next_mode;
 	assign 	LED = mode;
 	always @(posedge slow_clk or negedge rst_n) begin
 		if (~rst_n) begin
@@ -253,19 +469,19 @@ module Top (
 			end
 			else if(mode == `Song_PlayMode 	)
 				case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc})
-					6'b100000:	mode <= `PlayMode;
+					6'b100000:	mode <= song_visibility[song_id] ? `PlayMode : `Song_PlayMode;
 					6'b000001:	mode <= `ChooseModePage;
 					default:	mode <= `Song_PlayMode;
 				endcase
 			else if(mode == `Song_LearnMode	)
 				case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc})
-					6'b100000:	mode <= `LearnMode;
+					6'b100000:	mode <= song_visibility[song_id] ? `LearnMode : `Song_LearnMode;
 					6'b000001:	mode <= `ChooseModePage;
 					default:	mode <= `Song_LearnMode;
 				endcase
 			else if(mode == `Song_GameMode	)
 				case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc})
-					6'b100000:	mode <= `GameMode;
+					6'b100000:	mode <= song_visibility[song_id] ? `GameMode : `Song_GameMode;
 					6'b000001:	mode <= `ChooseModePage;
 					default:	mode <= `Song_GameMode;
 				endcase
@@ -273,7 +489,7 @@ module Top (
 				mode <= mode;
 		end
 	end
-
+    
 	//------------------Tub Display------------------//
 	`include "TubParams.v";
 	wire tub_en = (mode == `FreeMode || mode == `LearnMode || mode == `GameMode || mode == `PlayMode
@@ -312,7 +528,7 @@ module Top (
 				|| mode == `GameMode || mode == `LearnMode || mode == `PlayMode) begin
 			tub_in7 <= `tub_S;	tub_in6 <= `tub_O;	tub_in5 <= `tub_N;	tub_in4 <= `tub_G;
 			tub_in3 <= `tub_nil;tub_in2 <= `tub_nil;tub_in1 <= `tub_0;
-			case (visible_song_id)
+			case (song_id)
 				3'b000: tub_in0 <= `tub_1;
 				3'b001: tub_in0 <= `tub_2;
 				3'b010: tub_in0 <= `tub_3;
@@ -329,46 +545,6 @@ module Top (
           tub_in3 <= `tub_nil; tub_in2 <= `tub_nil; tub_in1 <= `tub_nil; tub_in0 <= `tub_nil;
         end
 	end
-
-	
-
-	//------------------Song Repertoire------------------//
-	// parameter 			song_per_page 	= 4;
-	reg 				repertoire_page = 0;
-	reg 	[1:0] 		page_song_id 	= 0;
-    //There is a problem here
-	always @(posedge slow_clk or negedge rst_n) begin
-		if(~rst_n) begin
-			repertoire_page <= 1'b0;
-			page_song_id 	<= 2'b00;
-		end
-		else begin
-			if(mode == `Song_PlayMode || mode == `Song_LearnMode || mode == `Song_GameMode) begin
-				if(pose_up) begin
-					page_song_id <= (page_song_id == 2'b00) ? 2'b11 : page_song_id - 1;
-                    repertoire_page <= repertoire_page;
-                end
-				else if(pose_down) begin
-					page_song_id <= (page_song_id == 2'b11) ? 2'b00 : page_song_id + 1;
-                    repertoire_page <= repertoire_page;
-                end
-				else if(pose_left || pose_right) begin
-				    page_song_id <= page_song_id;
-					repertoire_page <= ~repertoire_page;
-			    end
-				else begin
-					page_song_id <= page_song_id;
-					repertoire_page <= repertoire_page;
-				end
-			end
-		end
-	end
-
-	wire   [2:0] 	   visible_song_id;
-	wire   [1:0]       octave;
-	wire               pwm_fm;
-	wire               sd_fm;
-	assign  visible_song_id = {repertoire_page, page_song_id};
       
     //------------------Memory------------------//
     reg                       read_en;
@@ -473,8 +649,7 @@ module Top (
 	    endcase
 	end
 
-	assign select = real_song_id[visible_song_id];
-
+	assign select = real_song_id[song_id];
 
     MemoryBlock MemoryBlock_inst(
         .clk                    (sys_clk),
@@ -498,6 +673,8 @@ module Top (
     );
     
 	//------------------Free Mode------------------//
+	wire               pwm_fm;
+    wire               sd_fm;
     FreeMode FreeMode_inst(
         .clk                    (sys_clk            ),
         .rst_n                  (mode == `FreeMode| mode == `LearnMode),
@@ -577,14 +754,17 @@ module Top (
         //Song repertoire
         .repertoire_page (repertoire_page),
         .page_song_id    (page_song_id),
-        
+        .songname_1       (songname[0]),
+        .songname_2       (songname[1]),
+        .songname_3       (songname[2]),
+        .songname_4       (songname[3]),
         //Playmode inputs and outputs
         .output_ready    (output_ready),//input from memory
         .data_out        (data_out), //input from memory
         .vga_bottom_pm   (vga_bottom_pm), //output from vga
         .vga_bottom_lm   (vga_bottom_lm),
         .vga_bottom_gm   (vga_bottom_gm),
-        
+		.duration		 (duration     ),
         //Output port
         .hsync       (hsync),   //Horizontal Sync Signal
         .vsync       (vsync),   //Vertical Sync Signal
@@ -598,6 +778,5 @@ module Top (
     
     //------------------Debug Output------------------//  
     assign Debug_LED = {data_out[2], data_out[3], data_out[4], data_out[5], data_out[6], repertoire_page, page_song_id[1], page_song_id[0]};
-    
     
 endmodule
