@@ -16,6 +16,6 @@
 
 
 `define maxUsernameLength 8
-`define maxUserNum        10
+`define maxUserNum        8
 `define maxSongnameLength 20
-`define maxSongNum        10
+`define maxSongNum        8
