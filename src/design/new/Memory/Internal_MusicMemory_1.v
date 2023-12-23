@@ -1,21 +1,28 @@
 `timescale 1ns / 1ps
 `include "MemoryPara.v"
+// A prewritten memory unit that stores the music.
+// Inherited from MusicMemory.v, but manually removed all functions about writing.
+// You may refer to MusicMemory.v for more details.
 module Internal_MusicMemory_1(
-    input wire                  clk,
-    input wire                  rst_n,
-    input wire                  write_en,
-    input wire                  read_en,
-    input wire                  read_rst,
-    input wire [`DATA_WIDTH-1:0] data_in,
-    output reg [`DATA_WIDTH-1:0] data_out,
-    output reg                  output_ready,
-    output wire [`MAX_DEPTH_BIT-1:0]  duration
+    input   wire                        clk             ,
+    input   wire                        rst_n           ,
+    input   wire                        write_en        ,
+    input   wire                        read_en         ,
+    input   wire                        read_rst        ,
+    input   wire [`DATA_WIDTH-1:0]      data_in         ,
+    output  reg  [`DATA_WIDTH-1:0]      data_out        ,
+    output  reg                         output_ready    ,
+    output  wire [`MAX_DEPTH_BIT-1:0]   duration
 );
 
-wire    [`DATA_WIDTH-1:0]               memory                  [0:191]; // memory for notes and octave
-reg     [7:0]                           count;                      // number of notes in memory
-reg     [7:0]                           read_pointer;               // position of read pointer
+wire    [`DATA_WIDTH-1:0]               memory                  [0:191];    // memory for notes and octave
+reg     [`MAX_DEPTH_BIT-1:0]            count;                              // number of notes in memory
+reg     [`MAX_DEPTH_BIT-1:0]            read_pointer;                       // position of read pointer
 reg     [`MAX_SAMPLE_INTERVAL-1:0]      read_sample_counter;
+
+parameter LOCAL_SAMPLE_INTERVAL = 20833333; // 72 bpm, each beat devide into 4 parts
+
+assign duration = count * LOCAL_SAMPLE_INTERVAL / `SAMPLE_INTERVAL; // correcting the duration based on the given bpm
 
 assign memory[0 ] = 10'b0000000100;
 assign memory[1 ] = 10'b0000000100;
@@ -257,25 +264,18 @@ assign memory[189] = 10'b0000000100;
 assign memory[190] = 10'b0000000100;
 assign memory[191] = 10'b0000000000;
 
-assign duration = count * LOCAL_SAMPLE_INTERVAL / `SAMPLE_INTERVAL;
-
-parameter LOCAL_SAMPLE_INTERVAL = 20833333; // 72 bpm * 4
-
-// Initialize internal signals
 initial begin
     count = 192;
     read_pointer = 0;
     read_sample_counter = 1;
 end
 
-// Storage and output control logic
 always @(posedge clk) begin
     if (~rst_n || read_rst) begin
         read_pointer <= 0;
         output_ready <= 0;
         read_sample_counter <= 1;
     end else begin
-        // Output data sequentially when output_enable is asserted
         if (read_en) begin
             if(count > 0 && read_pointer < count) begin
                 output_ready <= 1;

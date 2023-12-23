@@ -1,21 +1,24 @@
 `timescale 1ns / 1ps
 `include "MemoryPara.v"
+// A prewritten memory unit that stores the music.
+// Inherited from MemoryUnit.v, but manually removed all functions about writing.
+// You may refer to MemoryUnit.v for more details.
 module Internal_MemoryUnit_5(
-    input wire                          clk,
-    input wire                          rst_n,
-    input wire                          write_en,
-    input wire                          read_en,
-    input wire                          read_rst,
-    input wire [`STATE_WIDTH-1:0]        current_state,  // 00 for autoplay, 01 for learning, 10 and 11 other state
-    input wire [`DATA_WIDTH-1:0]         data_in,
-    output reg [`DATA_WIDTH-1:0]         data_out,
-    output reg                          output_ready,
-    output wire [`MAX_DEPTH_BIT-1:0]  duration
+    input   wire                            clk             ,
+    input   wire                            rst_n           ,
+    input   wire                            write_en        ,
+    input   wire                            read_en         ,
+    input   wire                            read_rst        ,
+    input   wire [`STATE_WIDTH-1:0]         current_state   ,
+    input   wire [`DATA_WIDTH-1:0]          data_in         ,
+    output  reg  [`DATA_WIDTH-1:0]          data_out        ,
+    output  reg                             output_ready    ,
+    output  wire [`MAX_DEPTH_BIT-1:0]       duration
 );
 
-wire [`DATA_WIDTH-1:0]   music_data_out;
-wire                    music_output_ready;
-wire                    read_rst_in;
+wire [`DATA_WIDTH-1:0]   music_data_out     ;
+wire                     music_output_ready ;
+wire                     read_rst_in        ;
 
 Internal_MusicMemory_5 Music(clk, rst_n, write_en, read_en, read_rst_in, data_in, music_data_out, music_output_ready, duration);
 

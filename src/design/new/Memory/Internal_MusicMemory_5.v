@@ -1,39 +1,41 @@
 `timescale 1ns / 1ps
 `include "MemoryPara.v"
+// A prewritten memory unit that stores the music.
+// Inherited from MusicMemory.v, but manually removed all functions about writing.
+// You may refer to MusicMemory.v for more details.
 module Internal_MusicMemory_5(
-    input wire                  clk,
-    input wire                  rst_n,
-    input wire                  write_en,
-    input wire                  read_en,
-    input wire                  read_rst,
-    input wire [`DATA_WIDTH-1:0] data_in,
-    output reg [`DATA_WIDTH-1:0] data_out,
-    output reg                  output_ready,
-    output wire [`MAX_DEPTH_BIT-1:0]  duration
+    input   wire                        clk             ,
+    input   wire                        rst_n           ,
+    input   wire                        write_en        ,
+    input   wire                        read_en         ,
+    input   wire                        read_rst        ,
+    input   wire [`DATA_WIDTH-1:0]      data_in         ,
+    output  reg  [`DATA_WIDTH-1:0]      data_out        ,
+    output  reg                         output_ready    ,
+    output  wire [`MAX_DEPTH_BIT-1:0]   duration
 );
 
-wire    [`DATA_WIDTH-1:0]              memory                  [0:191]; // memory for notes and octave
-reg     [8:0]                           count;                      // number of notes in memory
-reg     [8:0]                           read_pointer;               // position of read pointer
+wire    [`DATA_WIDTH-1:0]               memory                  [0:191];    // memory for notes and octave
+reg     [`MAX_DEPTH_BIT-1:0]            count;                              // number of notes in memory
+reg     [`MAX_DEPTH_BIT-1:0]            read_pointer;                       // position of read pointer
 reg     [`MAX_SAMPLE_INTERVAL-1:0]      read_sample_counter;
 
+parameter LOCAL_SAMPLE_INTERVAL = 12500000; // 60 bpm, each beat devide into 8 parts
 
-assign duration = count * LOCAL_SAMPLE_INTERVAL / `SAMPLE_INTERVAL;
+assign duration = count * LOCAL_SAMPLE_INTERVAL / `SAMPLE_INTERVAL; // correcting the duration based on the given bpm
 
-parameter LOCAL_SAMPLE_INTERVAL = 12500000; // 60 bpm * 8
-
-assign memory[0] = 10'b0000000100;
-assign memory[1] = 10'b0000000100;
-assign memory[2] = 10'b0000000100;
-assign memory[3] = 10'b0000000000;
-
-assign memory[4] = 10'b0000000100;
-assign memory[5] = 10'b0000000100;
-assign memory[6] = 10'b0000000100;
-assign memory[7] = 10'b0000000000;
-
-assign memory[8] = 10'b0000000100;
-assign memory[9] = 10'b0000000100;
+assign memory[0 ] = 10'b0000000100;
+assign memory[1 ] = 10'b0000000100;
+assign memory[2 ] = 10'b0000000100;
+assign memory[3 ] = 10'b0000000000;
+    
+assign memory[4 ] = 10'b0000000100;
+assign memory[5 ] = 10'b0000000100;
+assign memory[6 ] = 10'b0000000100;
+assign memory[7 ] = 10'b0000000000;
+    
+assign memory[8 ] = 10'b0000000100;
+assign memory[9 ] = 10'b0000000100;
 assign memory[10] = 10'b0000000100;
 assign memory[11] = 10'b0000000100;
 

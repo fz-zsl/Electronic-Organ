@@ -1,26 +1,28 @@
 `timescale 1ns / 1ps
 `include "MemoryPara.v"
+// A prewritten memory unit that stores the music.
+// Inherited from MusicMemory.v, but manually removed all functions about writing.
+// You may refer to MusicMemory.v for more details.
 module Internal_MusicMemory_4(
-    input wire                  clk,
-    input wire                  rst_n,
-    input wire                  write_en,
-    input wire                  read_en,
-    input wire                  read_rst,
-    input wire [`DATA_WIDTH-1:0] data_in,
-    output reg [`DATA_WIDTH-1:0] data_out,
-    output reg                  output_ready,
-    output wire [`MAX_DEPTH_BIT-1:0]  duration
+    input   wire                        clk             ,
+    input   wire                        rst_n           ,
+    input   wire                        write_en        ,
+    input   wire                        read_en         ,
+    input   wire                        read_rst        ,
+    input   wire [`DATA_WIDTH-1:0]      data_in         ,
+    output  reg  [`DATA_WIDTH-1:0]      data_out        ,
+    output  reg                         output_ready    ,
+    output  wire [`MAX_DEPTH_BIT-1:0]   duration
 );
 
-wire    [`DATA_WIDTH-1:0]              memory                  [0:503]; // memory for notes and octave
-reg     [8:0]                           count;                      // number of notes in memory
-reg     [8:0]                           read_pointer;               // position of read pointer
+wire    [`DATA_WIDTH-1:0]               memory                  [0:503];    // memory for notes and octave
+reg     [`MAX_DEPTH_BIT-1:0]            count;                              // number of notes in memory
+reg     [`MAX_DEPTH_BIT-1:0]            read_pointer;                       // position of read pointer
 reg     [`MAX_SAMPLE_INTERVAL-1:0]      read_sample_counter;
 
+parameter LOCAL_SAMPLE_INTERVAL = 3571428; // 105 bpm, each beat devide into 16 parts
 
-assign duration = count * LOCAL_SAMPLE_INTERVAL / `SAMPLE_INTERVAL;
-
-parameter LOCAL_SAMPLE_INTERVAL = 3571428; // 105 bpm * 16
+assign duration = count * LOCAL_SAMPLE_INTERVAL / `SAMPLE_INTERVAL; // correcting the duration based on the given bpm
 
 assign memory[0 ] = 10'b0001000001;
 assign memory[1 ] = 10'b0001000001;
