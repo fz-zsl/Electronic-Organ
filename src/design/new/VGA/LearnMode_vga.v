@@ -1,39 +1,18 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2023/12/19 16:52:45
-// Design Name: 
-// Module Name: LearnMode_vga
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
 module LearnMode_vga(
-input   wire            vga_clk     ,
-input   wire            rst_n       ,
-input   wire    [9:0]   pos_x       ,
-input   wire    [9:0]   pos_y       ,
-
-input   wire    [7:0]   note        ,
-input   wire    [1:0]   shift       ,
-
-input   wire    [7:0]   key         ,//Input for user inputs
-
-input   wire            output_ready,
-output  reg     [23:0]  pos_data    ,
-output  wire    [9:0]   vga_bottom 
+    input   wire            vga_clk     ,
+    input   wire            rst_n       ,
+    input   wire    [9:0]   pos_x       ,
+    input   wire    [9:0]   pos_y       ,
+    
+    input   wire    [7:0]   note        ,
+    input   wire    [1:0]   shift       ,
+    
+    input   wire    [7:0]   key         ,//Input for user inputs
+    
+    input   wire            output_ready,
+    output  reg     [23:0]  pos_data    ,
+    output  wire    [9:0]   vga_bottom 
 );
 
 //This is the module that displays the COE notes. 

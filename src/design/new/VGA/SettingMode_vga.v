@@ -1,24 +1,24 @@
 `timescale 1ns / 1ps
 module SettingMode_vga #(
-parameter  width            =   32,
-parameter  height           =   32,
+    parameter  width            =   32,
+    parameter  height           =   32,
 
-parameter  start_point_x_C  =   112,
-parameter  start_point_x_D  =   176,
-parameter  start_point_x_E  =   240,
-parameter  start_point_x_F  =   304,
-parameter  start_point_x_G  =   368,
-parameter  start_point_x_A  =   432,
-parameter  start_point_x_B  =   496,
+    parameter  start_point_x_C  =   112,
+    parameter  start_point_x_D  =   176,
+    parameter  start_point_x_E  =   240,
+    parameter  start_point_x_F  =   304,
+    parameter  start_point_x_G  =   368,
+    parameter  start_point_x_A  =   432,
+    parameter  start_point_x_B  =   496,
 
-parameter  start_point_y    =   200
+    parameter  start_point_y    =   200
 )
 (
-input   wire            vga_clk     ,
-input   wire    [9:0]   pos_x       ,
-input   wire    [9:0]   pos_y       ,
-input           [2:0]   setting_cnt ,
-output  reg     [23:0]  pos_data    
+    input   wire            vga_clk     ,
+    input   wire    [9:0]   pos_x       ,
+    input   wire    [9:0]   pos_y       ,
+    input           [2:0]   setting_cnt ,
+    output  reg     [23:0]  pos_data    
 );
 
 //The following instantiation has used IP catalog, therefore need to instantiate ROM that has initialized loading COE files.

@@ -11,6 +11,9 @@ module vga_pic(
     input   wire    [7:0]   next_mode           ,  
     input   wire    [7:0]   note                ,
     input   wire    [1:0]   shift               ,
+    //Welcome Page Username Inputs
+    input   wire    [63:0]  username            ,
+    input   wire    [63:0]  currentuser         ,
     //Choose Panels Inputs
     input   wire            repertoire_page     ,
     input   wire    [1:0]   page_song_id        ,
@@ -25,6 +28,9 @@ module vga_pic(
     input   wire    [2:0]   setting_cnt         ,
     //Process Panel Inputs
     input   wire    [9:0]   duration            ,
+    //Recording Inputs
+    input                   recording    ,
+    input                   handling_rec ,
     //Bottom Outputs
     output  wire    [9:0]   vga_bottom_pm       ,
     output  wire    [9:0]   vga_bottom_lm       ,
@@ -43,6 +49,7 @@ module vga_pic(
             .rst_n       (rst_n),
             .pos_x       (pos_x),
             .pos_y       (pos_y),
+            .username    (username),
             .pos_data    (output_welcomepage) 
     );
     
@@ -72,10 +79,10 @@ module vga_pic(
             .pos_y       (pos_y),
             .repertoire_page (repertoire_page),
             .page_song_id    (page_song_id),
-           // .songname_1  (songname_1),
-           // .songname_2  (songname_2),
-           // .songname_3  (songname_3),
-           // .songname_4  (songname_4),
+            .songname_1  (songname_1),
+            .songname_2  (songname_2),
+            .songname_3  (songname_3),
+            .songname_4  (songname_4),
             .pos_data    (output_songchoosepanel) 
     );
 
@@ -134,6 +141,7 @@ module vga_pic(
     wire            enable_gamemode;
     assign enable_gamemode = ((pos_y <= 384) && (mode == `GameMode )) ? 1'b1 : 1'b0;
     wire    [23:0]  output_gamemode;
+    wire    [7:0]  scores;
     GameMode_vga  gamemode_vga_inst(
             .vga_clk     (vga_clk),
             .rst_n       (mode == `GameMode),
@@ -142,6 +150,7 @@ module vga_pic(
             .note        (data_out[9:2]),//Input for note
             .shift       (data_out[1:0]),//Input for shift
             .output_ready(output_ready),//Input for determing whether the song ends.
+            .scores      (scores),//Output to update the scores
             .key         (note),//Input for user inputs
             .vga_bottom  (vga_bottom_gm),//Output for the bottom of the blocks   
             .pos_data    (output_gamemode)//Output for vga
@@ -173,19 +182,58 @@ module vga_pic(
         .setting_cnt (setting_cnt       ),
         .pos_data    (output_settingmode)
     );
+    
+    //------------- Scores Mode -------------//
+    //You can check out the rank lists here. 
+    wire             enable_scores;
+    assign enable_scores = (mode == `UserRanking)? 1'b1 : 1'b0;
+    wire   [23:0]    output_scores;
+    Ranklist_vga ranking(
+         .vga_clk     (vga_clk),
+         .rst_n       (mode == `UserRanking),
+         .pos_x       (pos_x),
+         .pos_y       (pos_y),
+         .username    (currentuser),
+         .scores      (scores),//Input to update scores
+         .output_ready(output_ready),
+         .pos_data    (output_scores)
+    );
+    
 
     //------------- Additional panels instance -------------//
     //Process Panel Here
     wire     [23:0]      output_process;
     wire                 enable_process;
-    assign enable_process = ((pos_y <= 3) && (mode == `LearnMode || mode == `PlayMode || mode == `GameMode)) ? 1'b1 : 1'b0;
+    assign enable_process = ((pos_y <= 5) && (mode == `LearnMode || mode == `PlayMode || mode == `GameMode)) ? 1'b1 : 1'b0;
     process process_inst(
         .clk         (sys_clk           ),
-        .showProcess ((mode == `LearnMode || mode == `PlayMode || mode == `GameMode)),
+        .rst_n       ((mode == `LearnMode || mode == `PlayMode || mode == `GameMode)),
         .pos_x       (pos_x             ),
         .pos_y       (pos_y             ),
         .duration    (duration          ),
         .pos_data    (output_process    )
+    );
+    //REC panels here
+    wire    [23:0]      output_REC;
+    wire                enable_REC;
+    recording_panel recording_panel_inst(
+         .vga_clk     (vga_clk),
+         .rst_n       (rst_n),
+         .pos_x       (pos_x),
+         .pos_y       (pos_y),
+         .enable_pic  (enable_REC),
+         .pos_data    (output_REC) 
+    );
+    //Save_delete panels here
+    wire    [23:0]      output_save_delete;
+    wire                enable_save_delete;
+    save_delete_panel save_delete_panel_inst(
+         .vga_clk     (vga_clk),
+         .rst_n       (rst_n),
+         .pos_x       (pos_x),
+         .pos_y       (pos_y),
+         .enable_pic  (enable_save_delete),
+         .pos_data    (output_save_delete) 
     );
 
 always @(posedge vga_clk or negedge rst_n) begin
@@ -194,6 +242,10 @@ always @(posedge vga_clk or negedge rst_n) begin
     else begin
         if(enable_process)
             pos_data <= output_process;
+        else if(enable_REC && recording)
+            pos_data <= output_REC;
+        else if(enable_save_delete && handling_rec)
+            pos_data <= output_save_delete;
         else if(enable_welcomepage)
             pos_data <= output_welcomepage;
         else if(enable_choosepanel)
@@ -210,6 +262,8 @@ always @(posedge vga_clk or negedge rst_n) begin
             pos_data <= output_gamemode;
         else if(enable_settingmode)
             pos_data <= output_settingmode;
+        else if(enable_scores)
+            pos_data <= output_scores;
         else if(notes_enable)
             pos_data <= notes_data;
         else 

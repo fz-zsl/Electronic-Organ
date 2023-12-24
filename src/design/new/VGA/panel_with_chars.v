@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2023/12/09 17:29:33
-// Design Name: 
-// Module Name: panel_with_chars
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 //This is the module of panels with chars, you can configure chars and panels.
 module panel_with_chars #(
     //Char Configuration
@@ -40,7 +20,7 @@ module panel_with_chars #(
     input   wire                rst_n       ,
     input   wire    [9:0]       pos_x       ,
     input   wire    [9:0]       pos_y       ,
-    input   wire    [8*char_count-1:0]  string      ,
+    input   wire    [159:0]     string      ,
     output  wire                enable      ,
     output  reg     [23:0]      pos_data
 );
@@ -65,7 +45,7 @@ module panel_with_chars #(
     wire    [7:0]   ascii   ;
     wire    [7:0]   x_over  ;
     wire    [7:0]   y_over  ;
-    wire    [3:0]   count   ;
+    wire    [7:0]   count   ;
 
     assign  count   =  (char_enable) ? (pos_x - panel_start_x - char_start_x) / char_width : 0;
     assign  ascii   =  string[8*(char_count - count)-1 -:8];
@@ -73,11 +53,13 @@ module panel_with_chars #(
     assign  y_over  =  (pos_y - panel_start_y - char_start_y) % char_height; 
 
     wire    [23:0]  char_output;
-    vga_ascii vga_ascii_inst(
+    vga_ascii #(
+        .char_color (char_color)
+    )vga_ascii_inst(
         .ascii      (ascii   ),
         .x_over     (x_over  ),
         .y_over     (y_over  ),  
-        .pos_data   (char_output)
+        .pix_data   (char_output)
     );
 
 //---------------------------Pos_Data Output Decision Panel---------------------------//

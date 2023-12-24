@@ -1,26 +1,23 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2023/12/18 12:40:13
-// Design Name: 
-// Module Name: ChoosePanel
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 `include "VGAparams.v"
+module ChoosePanel#(      
+    //In total there are eight panels and each panel can contain at most 9 character from 0-9 a-z
+    parameter  char_width               =   24,
+    parameter  char_height              =   32,
+    parameter  panel_width              =   240,
+    parameter  panel_height             =   64,
 
-module ChoosePanel(
+
+    //In total, there are 8 panels available for outputs. 
+    parameter  start_point_x_panel_1    =   64,
+    parameter  start_point_x_panel_2    =   336, 
+     
+    parameter  start_point_y_panel_1    =   112,
+    parameter  start_point_y_panel_2    =   208,
+    parameter  start_point_y_panel_3    =   304,
+
+    parameter  panel_color              =   24'hFFFFFF
+)(
    input   wire            vga_clk     ,
    input   wire            rst_n       ,
    input   wire    [9:0]   pos_x       ,
@@ -28,23 +25,7 @@ module ChoosePanel(
    input   wire    [7:0]   next_mode   ,
    output  reg     [23:0]  pos_data  
    );
-   
-   //In total there are eight panels and each panel can contain at most 9 character from 0-9 a-z
-   parameter  char_width               =   24;
-   parameter  char_height              =   32;
-   parameter  panel_width              =   240;
-   parameter  panel_height             =   64;
-   
-   
-   //In total, there are 8 panels available for outputs. 
-   parameter  start_point_x_panel_1    =   64;
-   parameter  start_point_x_panel_2    =   336; 
-        
-   parameter  start_point_y_panel_1    =   112;
-   parameter  start_point_y_panel_2    =   208;
-   parameter  start_point_y_panel_3    =   304;
 
-   parameter  panel_color              =   24'hFFFFFF;
 
 //---------------------------Panel Instantiation---------------------------//
    wire                enable_1;
@@ -53,7 +34,8 @@ module ChoosePanel(
    assign  string_freemode = "Free Mode";
    panel_with_chars #(
        .panel_start_x  (start_point_x_panel_1),
-       .panel_start_y  (start_point_y_panel_1)          
+       .panel_start_y  (start_point_y_panel_1),
+       .char_count     (9                   )           
    ) panel_1
    ( 
        .vga_clk  (vga_clk ),   
@@ -71,7 +53,8 @@ module ChoosePanel(
    assign  string_playmode = "Play Mode";
    panel_with_chars #(
        .panel_start_x  (start_point_x_panel_2),
-       .panel_start_y  (start_point_y_panel_1)          
+       .panel_start_y  (start_point_y_panel_1),
+       .char_count     (9                   )           
    )panel_2
    (
        .vga_clk  (vga_clk ),   
@@ -89,7 +72,8 @@ module ChoosePanel(
    assign  string_learnmode = "Learn Mode";
    panel_with_chars #(
        .panel_start_x  (start_point_x_panel_1),
-       .panel_start_y  (start_point_y_panel_2)          
+       .panel_start_y  (start_point_y_panel_2),
+       .char_count     (10                   )           
    )panel_3
    (
        .vga_clk  (vga_clk ),   
@@ -107,7 +91,8 @@ module ChoosePanel(
    assign  string_gamemode = "Game Mode";
    panel_with_chars #(
        .panel_start_x  (start_point_x_panel_2),
-       .panel_start_y  (start_point_y_panel_2)          
+       .panel_start_y  (start_point_y_panel_2),
+       .char_count     (9                   )           
    )panel_4
    (
        .vga_clk  (vga_clk ),   
@@ -125,7 +110,8 @@ module ChoosePanel(
    assign  string_setting = "Setting";
    panel_with_chars #(
        .panel_start_x  (start_point_x_panel_1),
-       .panel_start_y  (start_point_y_panel_3)          
+       .panel_start_y  (start_point_y_panel_3),
+       .char_count     (7                   )           
    )panel_5
    (
        .vga_clk  (vga_clk ),   
@@ -140,10 +126,11 @@ module ChoosePanel(
    wire                enable_6;
    wire    [23:0]      output_6;
    wire    [8*13-1:0]  string_userranking;
-   assign  string_userranking = "Ranking";
+   assign  string_userranking = "Scores";
    panel_with_chars #(
        .panel_start_x  (start_point_x_panel_2),
-       .panel_start_y  (start_point_y_panel_3)          
+       .panel_start_y  (start_point_y_panel_3),
+       .char_count     (6                    )           
    )panel_6
    (
        .vga_clk  (vga_clk ),   

@@ -1,25 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2023/12/20 23:13:00
-// Design Name: 
-// Module Name: GameMode_vga
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
-
 module GameMode_vga(
 input   wire            vga_clk     ,
 input   wire            rst_n       ,
@@ -104,7 +83,60 @@ else begin
     end
 end
 end
-
+//----------------------------------Judges------------------------------------//
+reg   [29:0]    counter;
+reg   [29:0]    counter_valid;
+always @(posedge vga_clk or negedge rst_n) begin
+    if(~rst_n) begin
+        counter <= 0;
+        counter_valid <= 0;
+    end
+    else begin
+        if(read_flag == 1'b1) begin
+            if(vga_bottom[8:2] == {key[1],key[2],key[3],key[4],key[5],key[6],key[7]}) begin
+                counter <= counter + 1;
+                counter_valid <= counter_valid + 1;
+            end
+            else begin
+                counter <= counter + 1;
+            end
+        end
+        else begin
+            counter <= counter;
+            counter_valid <= counter_valid;
+        end
+    end
+end
+wire    [7:0]       judge;
+wire    [23:0]      judge_string;
+wire                enable_judge;
+wire    [23:0]      output_judge;
+   assign judge = counter_valid * 100 / counter;
+   numbers_to_string (
+       .number      (judge),
+       .string      (judge_string)
+   );
+   panel_with_chars #(
+       //Char Configuration
+       .char_count      (3          ),   
+       .char_start_x    (7          ),
+       .char_start_y    (8          ),
+   
+       //Panel Configuration
+       .panel_width     (40         ),
+       .panel_height    (30         ),
+       .panel_start_x   (20         ),
+       .panel_start_y   (20         )          
+   )judges
+   (
+       .vga_clk  (vga_clk ),   
+       .rst_n    (rst_n   ),   
+       .pos_x    (pos_x   ),   
+       .pos_y    (pos_y   ),   
+       .string   (judge_string),   
+       .enable   (enable_judge),   
+       .pos_data (output_judge)
+   );
 //--------------------Output Port----------------------//
 assign vga_bottom = {1'b0, display[6][`DISPLAY_LENGTH-1],
                  display[5][`DISPLAY_LENGTH-1],
@@ -126,7 +158,9 @@ always @(posedge vga_clk or negedge rst_n) begin
 if(~rst_n)
     pos_data <= 24'hFFFFFF;
 else begin
-if(enable_A_flag)
+if(enable_judge)
+    pos_data <= ~output_judge;
+else if(enable_A_flag)
     pos_data <= (display[5][pos_y - 1] == 1'b1) ? ((display[5][`DISPLAY_LENGTH-1] == key[2] && key[2] == 1'b1) ? hit_color : block_color ): background_color;
 else if(enable_B_flag)
     pos_data <= (display[6][pos_y - 1] == 1'b1) ? ((display[6][`DISPLAY_LENGTH-1] == key[1] && key[1] == 1'b1) ? hit_color : block_color ): background_color;
@@ -145,29 +179,6 @@ else
 end 
 end  
 
-//----------------------------------Judges------------------------------------//
-reg     counter;
-reg     counter_valid;
-always @(posedge vga_clk or negedge rst_n) begin
-    if(~rst_n) begin
-        counter <= 0;
-        counter_valid <= 0;
-    end
-    else begin
-        if(read_flag == 1'b1) begin
-            if(vga_bottom[8:2] == {key[1],key[2],key[3],key[4],key[5],key[6],key[7]}) begin
-                counter <= counter + 1;
-                counter_valid <= counter_valid + 1;
-            end
-            else begin
-                counter <= counter + 1;
-            end
-        end
-        else begin
-            counter <= counter;
-            counter_valid <= counter_valid;
-        end
-    end
-end    
+
 
 endmodule

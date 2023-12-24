@@ -33,14 +33,14 @@ module Setting (
         end
         else begin
             case (pose_buts)
-                8'b00000001: {perm[0], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b00000010: {perm[1], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b00000100: {perm[2], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b00001000: {perm[3], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b00010000: {perm[4], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b00100000: {perm[5], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b01000000: {perm[6], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
-                8'b10000000: {perm[7], setting_cnt} <= {~setting_cnt, setting_cnt + 1'b1};
+                8'b00000001: {perm[~setting_cnt], setting_cnt} <= {3'd0, setting_cnt + 1'b1};
+                8'b00000010: {perm[~setting_cnt], setting_cnt} <= {3'd1, setting_cnt + 1'b1};
+                8'b00000100: {perm[~setting_cnt], setting_cnt} <= {3'd2, setting_cnt + 1'b1};
+                8'b00001000: {perm[~setting_cnt], setting_cnt} <= {3'd3, setting_cnt + 1'b1};
+                8'b00010000: {perm[~setting_cnt], setting_cnt} <= {3'd4, setting_cnt + 1'b1};
+                8'b00100000: {perm[~setting_cnt], setting_cnt} <= {3'd5, setting_cnt + 1'b1};
+                8'b01000000: {perm[~setting_cnt], setting_cnt} <= {3'd6, setting_cnt + 1'b1};
+                8'b10000000: {perm[~setting_cnt], setting_cnt} <= {3'd7, setting_cnt + 1'b1};
                 default: setting_cnt <= setting_cnt;
             endcase
         end

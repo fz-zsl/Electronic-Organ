@@ -6,6 +6,9 @@ module  vga_top (
     input   wire	[7:0]	mode	    ,
     input   wire    [7:0]   next_mode   ,     
     input   wire    [1:0]   shift       ,
+    //Welcome Page Username Inputs
+    input   wire    [63:0]  username    ,
+    input   wire    [63:0]  currentuser  ,
     //Choose Panels Inputs
     input   wire            repertoire_page,
     input   wire    [1:0]   page_song_id,
@@ -24,6 +27,9 @@ module  vga_top (
     output  wire    [9:0]   vga_bottom_pm,
     output  wire    [9:0]   vga_bottom_lm,
     output  wire    [9:0]   vga_bottom_gm,
+    //Recording Inputs
+    input                   recording    ,
+    input                   handling_rec ,
     //General Outputs
     output  wire            hsync       ,   //Horizontal Sync Signal
     output  wire            vsync       ,   //Vertical Sync Signal
@@ -71,6 +77,9 @@ vga_pic vga_pic_inst
     .next_mode        (next_mode  ),
     .note             (key        ),
     .shift            (shift      ),
+    //Welcome Page Inputs
+    .username         (username   ),
+    .currentuser      (currentuser),
     //Choose Panel Inputs
     .repertoire_page  (repertoire_page),
     .page_song_id     (page_song_id),
@@ -89,6 +98,9 @@ vga_pic vga_pic_inst
     .vga_bottom_gm    (vga_bottom_gm),
     //Setting Mode Inputs
     .setting_cnt      (setting_cnt ),
+    //Recording Inputs
+    .recording       (recording    ),
+    .handling_rec    (handling_rec),
     //Output Pixel Data
     .pos_data         (pix_data   )  
  );

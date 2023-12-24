@@ -42,7 +42,7 @@ module Top (
     wire pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc;
     wire nege_center, nege_up, nege_down, nege_left, nege_right, nege_esc;
     wire [7:0] pres_buts, pose_buts, nege_buts;
-	wire [2:0] perm_conf [7:0];
+    wire [2:0] perm_conf [7:0];
 	wire [2:0] setting_cnt;
 	reg setting_rst_n = 1'b1;
 	Setting Setting_inst(
@@ -98,6 +98,8 @@ module Top (
 	//------------------user login------------------//
 	reg [(`maxUsernameLength * 8 - 1) : 0] username [(`maxUserNum - 1):0];
 	reg [(`maxUsernameLength * 8 - 1) : 0] newUsername;
+	reg rstNewUsername;
+	reg [7:0] curInput;
 	reg [2:0] userNum;
 	reg [4:0] usernameInputPnt;
 	initial begin
@@ -107,58 +109,77 @@ module Top (
 		username[3] = "zhousl";
 		userNum = 4;
 		usernameInputPnt = 0;
+		rstNewUsername = 0;
 	end
 
 	always @(posedge slow_clk or negedge rst_n) begin
 		if (~rst_n) begin
-			username[0] = "admin";			
-			username[1] = "xiaoyc";
-			username[2] = "wumx";			
-			username[3] = "zhousl";
-			userNum = 4;
-			usernameInputPnt = 0;
+			username[0] <= "admin";			
+			username[1] <= "xiaoyc";
+			username[2] <= "wumx";			
+			username[3] <= "zhousl";
+			userNum <= 4;
+			usernameInputPnt <= 0;
+			newUsername <= 0;
+			curInput <= 0;
+			rstNewUsername <= 0;
 		end
+        else if (mode == `WelcomePage && rstNewUsername) begin
+            newUsername <= 0;
+            rstNewUsername <= 0;
+        end
 		else if (mode == `WelcomePage && username[userNum] != 0) begin
 			userNum <= userNum + 1;
 			usernameInputPnt <= 0;
+			curInput <= 0;
+			rstNewUsername <= 1;
 		end
 		else if (mode == `WelcomePage) begin
-			case (pres_buts)
-				8'h01: begin
-					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 6));
+			case (pose_buts)
+				8'h80: begin
+					newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 6));
 					usernameInputPnt <= usernameInputPnt;
-				end
-				8'h02: begin
-                    newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 5));
-					usernameInputPnt <= usernameInputPnt;
-				end
-				8'h04: begin
-					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 4));
-					usernameInputPnt <= usernameInputPnt;
-				end
-				8'h08: begin
-					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 3));
-					usernameInputPnt <= usernameInputPnt;
-				end
-				8'h10: begin
-					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 2));
-					usernameInputPnt <= usernameInputPnt;
-				end
-				8'h20: begin
-					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 1));
-					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 6);
 				end
 				8'h40: begin
-					newUsername <= newUsername ^ (1<<((`maxUsernameLength - usernameInputPnt - 1) * 8 + 0));
+                    newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 5));
 					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 5);
 				end
-				8'h80: begin
+				8'h20: begin
+					newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 4));
+					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 4);
+				end
+				8'h10: begin
+					newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 3));
+					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 3);
+				end
+				8'h08: begin
+					newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 2));
+					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 2);
+				end
+				8'h04: begin
+					newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 1));
+					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 1);
+				end
+				8'h02: begin
+					newUsername <= newUsername ^ (1 << ((`maxUsernameLength - usernameInputPnt - 1) * 8 + 0));
+					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput ^ (1 << 0);
+				end
+				8'h01: begin
 					newUsername <= newUsername;
 					usernameInputPnt <= usernameInputPnt + 1;
+					curInput <= 0;
 				end
 				default: begin
 					newUsername <= newUsername;
 					usernameInputPnt <= usernameInputPnt;
+					curInput <= curInput;
 				end
 		    endcase
 		end
@@ -176,31 +197,34 @@ module Top (
 			usernameInputPnt <= 0;
 		end
 	end
+	
+	assign Debug_LED = curInput;
 
 	//------------------song names------------------//
 	reg [(`maxSongnameLength * 8 - 1) : 0] songname [(`maxSongNum - 1):0];
 	initial begin
-		songname[0] = "Temp                ";
-		songname[1] = "Little Star         ";
-		songname[2] = "Jingle Bells        ";
-		songname[3] = "Happy New Year      ";
-		songname[4] = "Croatain Rhapsody   ";
-		songname[5] = "Canon               ";
-		songname[6] = "Fur Elise           ";
-		songname[7] = "Moonlight Sonata    ";
-		songname[8] = "Turkish March       ";
+		songname[0] = "Little Star";
+		songname[1] = "Your new home";
+		songname[2] = "Canon";
+		songname[3] = "Happy New Year";
+		songname[4] = "Jingle Bell";
+		songname[5] = "Canon";
+		songname[6] = "Fur Elise";
+		songname[7] = "Moonlight Sonata";
+		songname[8] = "Turkish March";
 	end
 
 	always @(posedge slow_clk or negedge rst_n) begin
 		if (~rst_n) begin
-			songname[0] <= "Temp                ";
-			songname[1] <= "Little Star         ";
-			songname[2] <= "Jingle Bells        ";
-			songname[3] <= "Happy New Year      ";
-			songname[4] <= "Croatain Rhapsody   ";
-			songname[5] <= "Canon               ";
-			songname[6] <= "Fur Elise           ";
-			songname[7] <= "Moonlight Sonata    ";
+		    songname[0] = "Little Star";
+            songname[1] = "Your new home";
+            songname[2] = "Canon";
+            songname[3] = "Happy New Year";
+            songname[4] = "Jingle Bell";
+            songname[5] = "Canon";
+            songname[6] = "Fur Elise";
+            songname[7] = "Moonlight Sonata";
+            songname[8] = "Turkish March";
 		end
 		else begin
 			songname[0] <= songname[0];
@@ -334,9 +358,7 @@ module Top (
 					end
 					6'b010000: begin
 						case (next_mode)
-							`FreeMode: begin
-								next_mode	<= `SettingMode;
-							end
+							`FreeMode:          next_mode	<= `SettingMode;
 							`Song_PlayMode:		next_mode	<= `UserRanking;
 							`Song_LearnMode:	next_mode	<= `FreeMode;
 							`Song_GameMode:		next_mode	<= `Song_PlayMode;
@@ -349,9 +371,7 @@ module Top (
 						case (next_mode)
 							`FreeMode:			next_mode	<= `Song_LearnMode;
 							`Song_PlayMode:		next_mode	<= `Song_GameMode;
-							`Song_LearnMode: begin
-								next_mode	<= `SettingMode;
-							end
+							`Song_LearnMode:    next_mode	<= `SettingMode;
 							`Song_GameMode:		next_mode	<= `UserRanking;
 							`SettingMode:		next_mode	<= `FreeMode;
 							`UserRanking:		next_mode	<= `Song_PlayMode;
@@ -365,9 +385,7 @@ module Top (
 							`Song_LearnMode:	next_mode	<= `Song_GameMode;
 							`Song_GameMode:		next_mode	<= `Song_LearnMode;
 							`SettingMode:		next_mode	<= `UserRanking;
-							`UserRanking: begin
-								next_mode	<= `SettingMode;
-							end
+							`UserRanking:       next_mode	<= `SettingMode;
 							default: 			next_mode	<= next_mode;
 						endcase
 					end
@@ -445,6 +463,11 @@ module Top (
 					6'b000001:	mode <= `ChooseModePage;
 					default:	mode <= `Song_GameMode;
 				endcase
+		    else if(mode == `UserRanking)
+		        case ({pose_center, pose_up, pose_down, pose_left, pose_right, pose_esc})
+                    6'b000001:  mode <= `ChooseModePage;
+                    default:    mode <= `UserRanking;
+                endcase
 			else 
 				mode <= mode;
 		end
@@ -593,7 +616,7 @@ module Top (
         .clk(sys_clk),
         .rst_n(mode == `GameMode),
         .output_ready(output_ready),
-        .data_out(data_out),
+        .data_out(vga_bottom_gm),
         .read_en(read_en_gm),
         .pwm(pwm_gm),
         .sd(sd_gm)
@@ -605,7 +628,7 @@ module Top (
             `PlayMode: begin pwm = pwm_pm; sd = sd_pm; read_en = read_en_pm; LED[7:1] = {vga_bottom_pm[2], vga_bottom_pm[3], vga_bottom_pm[4], vga_bottom_pm[5], vga_bottom_pm[6], vga_bottom_pm[7], vga_bottom_pm[8]}; LED[0] = breath_light; end
             `FreeMode: begin pwm = pwm_fm; sd = sd_fm; read_en = 0; LED[7:1] = pres_buts[7:1]; LED[0] = breath_light; end
             `LearnMode: begin pwm = pwm_fm; sd = sd_fm; read_en = read_en_lm; LED[7:1] = {vga_bottom_lm[2], vga_bottom_lm[3], vga_bottom_lm[4], vga_bottom_lm[5], vga_bottom_lm[6], vga_bottom_lm[7], vga_bottom_lm[8]}; LED[0] = breath_light; end
-            `GameMode: begin pwm = pwm_gm; sd = sd_gm; read_en = read_en_gm; LED[7:1] = pres_buts[7:1]; LED[0] = breath_light; end
+            `GameMode: begin pwm = pwm_gm; sd = sd_gm; read_en = read_en_gm; LED[7:1] = pres_buts[7:1]; LED[0] = output_ready; end
             default: begin pwm = 0; sd = 0; read_en = 0; end
         endcase
     end
@@ -614,13 +637,16 @@ module Top (
     wire        [23:0]      color;
     vga_top vga_inst(
         //Input port
-        .sys_clk     (sys_clk),  //Input Clock: 100 MHz 
-        .sys_rst_n   (rst_n),   //Reset Signal: Low active 
-        .key         (pres_buts),
-        .mode        (mode),
-        .next_mode   (next_mode),
-        .shift       (octave),
-        .setting_cnt (setting_cnt),
+        .sys_clk         (sys_clk),  //Input Clock: 100 MHz 
+        .sys_rst_n       (rst_n),   //Reset Signal: Low active 
+        //General Inputs
+        .key             (pres_buts),
+        .mode            (mode),
+        .next_mode       (next_mode),
+        .shift           (octave),
+        //Welcome Page Username Inputs
+        .username        (newUsername),
+        .currentuser     ("Current"),
         //Song repertoire
         .repertoire_page (repertoire_page),
         .page_song_id    (page_song_id),
@@ -631,22 +657,22 @@ module Top (
         //Playmode inputs and outputs
         .output_ready    (output_ready),//input from memory
         .data_out        (data_out), //input from memory
-        .vga_bottom_pm   (vga_bottom_pm), //output from vga
-        .vga_bottom_lm   (vga_bottom_lm),
-        .vga_bottom_gm   (vga_bottom_gm),
+        .vga_bottom_pm   (vga_bottom_pm),//output from vga play mode
+        .vga_bottom_lm   (vga_bottom_lm),//output from vga learn mode
+        .vga_bottom_gm   (vga_bottom_gm),//output from vga game mode 
 		.duration		 (duration     ),
+		//Setting Mode Inputs
+		.setting_cnt     (setting_cnt),
+		//Recording Inputs
+		.recording       (pres_rec   ),
+		.handling_rec    (handling_rec),
         //Output port
-        .hsync       (hsync),   //Horizontal Sync Signal
-        .vsync       (vsync),   //Vertical Sync Signal
-        .color       (color)    //RGB Data
+        .hsync           (hsync),   //Horizontal Sync Signal
+        .vsync           (vsync),   //Vertical Sync Signal
+        .color           (color)    //RGB Data
     );
-    
     
     assign color_red = color[23:20];
     assign color_green = color[15:12];
     assign color_blue = color[7:4];
-    
-    //------------------Debug Output------------------//  
-    // assign Debug_LED = {data_out[2], data_out[3], data_out[4], data_out[5], data_out[6], repertoire_page, page_song_id[1], page_song_id[0]};
-    assign Debug_LED = setting_cnt;
 endmodule
