@@ -226,8 +226,8 @@ module Top (
 		songname[0] = "Little Star";
 		songname[1] = "Your new home";
 		songname[2] = "Canon";
-		songname[3] = "Happy New Year";
-		songname[4] = "Jingle Bell";
+		songname[3] = "Jingle Bell";
+		songname[4] = "Happy New Year";
 		songname[5] = "Custom 1";
 		songname[6] = "Custom 2";
 		songname[7] = "Custom 3";
@@ -239,8 +239,8 @@ module Top (
 	    songname[0] = "Little Star";
             songname[1] = "Your new home";
             songname[2] = "Canon";
-            songname[3] = "Happy New Year";
-            songname[4] = "Jingle Bell";
+            songname[3] = "Jingle Bell";
+            songname[4] = "Happy New Year";
             songname[5] = "Custom 1";
 	    songname[6] = "Custom 2";
 	    songname[7] = "Custom 3";
