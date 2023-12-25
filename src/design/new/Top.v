@@ -228,23 +228,23 @@ module Top (
 		songname[2] = "Canon";
 		songname[3] = "Happy New Year";
 		songname[4] = "Jingle Bell";
-		songname[5] = "Canon";
-		songname[6] = "Fur Elise";
-		songname[7] = "Moonlight Sonata";
-		songname[8] = "Turkish March";
+		songname[5] = "Custom 1";
+		songname[6] = "Custom 2";
+		songname[7] = "Custom 3";
+		songname[8] = "Custom 4";
 	end
 
 	always @(posedge slow_clk or negedge rst_n) begin
 		if (~rst_n) begin
-		    songname[0] = "Little Star";
+	    songname[0] = "Little Star";
             songname[1] = "Your new home";
             songname[2] = "Canon";
             songname[3] = "Happy New Year";
             songname[4] = "Jingle Bell";
-            songname[5] = "Canon";
-            songname[6] = "Fur Elise";
-            songname[7] = "Moonlight Sonata";
-            songname[8] = "Turkish March";
+            songname[5] = "Custom 1";
+	    songname[6] = "Custom 2";
+	    songname[7] = "Custom 3";
+	    songname[8] = "Custom 4";
 		end
 		else begin
 			songname[0] <= songname[0];
