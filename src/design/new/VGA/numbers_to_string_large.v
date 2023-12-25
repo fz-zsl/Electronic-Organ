@@ -1,4 +1,5 @@
 module numbers_to_string_large(
+    //This module will transform a number between 0 to 9999 to string
     input          [14:0]       number,
     output  wire    [31:0]      string
     );

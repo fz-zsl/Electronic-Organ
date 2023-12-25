@@ -1,4 +1,5 @@
 module numbers_to_string(
+   //This will transform a number between 0~100 to string. 
     input          [7:0]       number,
     output  reg    [23:0]      string
     );

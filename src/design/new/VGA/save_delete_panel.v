@@ -1,4 +1,5 @@
 module save_delete_panel(
+    //This panel will show the save or delete panels. 
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,

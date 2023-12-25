@@ -1,6 +1,17 @@
 `timescale 1ns / 1ps
 `include "VGAparams.v"
-module Playmode_vga(
+module Playmode_vga#(
+    parameter  width            =   32,
+    parameter  height           =   32,
+    parameter  start_point_x_C  =   112,
+    parameter  start_point_x_D  =   176,
+    parameter  start_point_x_E  =   240,
+    parameter  start_point_x_F  =   304,
+    parameter  start_point_x_G  =   368,
+    parameter  start_point_x_A  =   432,
+    parameter  start_point_x_B  =   496,
+    parameter  start_point_y    =   416
+)(
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,
@@ -13,19 +24,8 @@ module Playmode_vga(
     output  wire    [9:0]   vga_bottom 
 );
     
-//This is the module that displays the COE notes. 
-parameter  width            =   32;
-parameter  height           =   32;
 
-parameter  start_point_x_C  =   112;
-parameter  start_point_x_D  =   176;
-parameter  start_point_x_E  =   240;
-parameter  start_point_x_F  =   304;
-parameter  start_point_x_G  =   368;
-parameter  start_point_x_A  =   432;
-parameter  start_point_x_B  =   496;
 
-parameter  start_point_y    =   416;
 
 wire      [23:0]        background_color;  
 wire      [7:0]        transition;

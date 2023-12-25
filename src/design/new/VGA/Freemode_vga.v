@@ -2,7 +2,18 @@
 `define BUFFER_LENGTH    20
 `define DISPLAY_LENGTH   384
 `define TOT_LENGTH       500
-module FreeMode_vga(
+module FreeMode_vga #(
+    parameter  width            =   32,
+    parameter  height           =   32,
+    parameter  start_point_x_C  =   112,
+    parameter  start_point_x_D  =   176,
+    parameter  start_point_x_E  =   240,
+    parameter  start_point_x_F  =   304,
+    parameter  start_point_x_G  =   368,
+    parameter  start_point_x_A  =   432,
+    parameter  start_point_x_B  =   496,
+    parameter  start_point_y    =   416
+)(
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,
@@ -11,21 +22,8 @@ module FreeMode_vga(
     input   wire    [1:0]   shift       ,
     output  reg     [23:0]  pos_data  
 );
-    
-//This is the module that displays the COE notes. 
-parameter  width            =   32;
-parameter  height           =   32;
 
-parameter  start_point_x_C  =   112;
-parameter  start_point_x_D  =   176;
-parameter  start_point_x_E  =   240;
-parameter  start_point_x_F  =   304;
-parameter  start_point_x_G  =   368;
-parameter  start_point_x_A  =   432;
-parameter  start_point_x_B  =   496;
-
-parameter  start_point_y    =   416;
-
+//At high pitch, the background will undergo blue shift and at low pitch the background will undergo red shift.
 wire      [23:0]        background_color;  
 wire      [7:0]        transition;
 assign    transition = pos_y * 2 / 3 - 1;      
@@ -36,7 +34,7 @@ parameter  low_pitch_color =     8'hFF;
 assign background_color = (shift == 2'b10)? {transition, transition, high_pitch_color}: 
                          ((shift == 2'b01)? {low_pitch_color, transition, transition} : middle_pitch_color);
 
-//------------------------Note_block------------------------//    
+//User Period to delay the falling of the blocks, or else it may fall too fast for human eyes to catach up. 
 reg [`BUFFER_LENGTH:0]      buffer [7:0];
 reg [`DISPLAY_LENGTH-1:0]   display[7:0];
 reg [19:0]                  count;
@@ -58,6 +56,7 @@ always @(posedge vga_clk or negedge rst_n) begin
     end
 end
 
+//This determines the falling blocks. 
 always @(posedge vga_clk or negedge rst_n) begin
     if(~rst_n) begin
         {display[0]} <= `TOT_LENGTH'b0;
@@ -81,6 +80,7 @@ always @(posedge vga_clk or negedge rst_n) begin
     end
 end
 
+//Enable flags for each fallng blocks.
 wire enable_A_flag = (pos_x - start_point_x_A < width) && (pos_x - start_point_x_A >= 0) && (pos_y < start_point_y - 16);                   
 wire enable_B_flag = (pos_x - start_point_x_B < width) && (pos_x - start_point_x_B >= 0) && (pos_y < start_point_y - 16); 
 wire enable_C_flag = (pos_x - start_point_x_C < width) && (pos_x - start_point_x_C >= 0) && (pos_y < start_point_y - 16); 

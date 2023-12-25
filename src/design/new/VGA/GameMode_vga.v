@@ -1,5 +1,17 @@
 `timescale 1ns / 1ps
-module GameMode_vga(
+module GameMode_vga #(
+    parameter  width            =   32,
+    parameter  height           =   32,
+    parameter  start_point_x_C  =   112,
+    parameter  start_point_x_D  =   176,
+    parameter  start_point_x_E  =   240,
+    parameter  start_point_x_F  =   304,
+    parameter  start_point_x_G  =   368,
+    parameter  start_point_x_A  =   432,
+    parameter  start_point_x_B  =   496,
+    parameter  start_point_y    =   416
+)
+(
 input   wire            vga_clk     ,
 input   wire            rst_n       ,
 input   wire    [9:0]   pos_x       ,
@@ -13,20 +25,8 @@ output  reg     [23:0]  pos_data    ,
 output  wire    [9:0]   vga_bottom 
 );
 
-//This is the module that displays the COE notes. 
-parameter  width            =   32;
-parameter  height           =   32;
 
-parameter  start_point_x_C  =   112;
-parameter  start_point_x_D  =   176;
-parameter  start_point_x_E  =   240;
-parameter  start_point_x_F  =   304;
-parameter  start_point_x_G  =   368;
-parameter  start_point_x_A  =   432;
-parameter  start_point_x_B  =   496;
-
-parameter  start_point_y    =   416;
-
+//Determine the background color by shifts
 wire      [23:0]        background_color;  
 wire      [7:0]        transition;
 assign    transition = pos_y * 2 / 3 - 1;      
@@ -37,7 +37,7 @@ parameter  low_pitch_color =     8'hFF;
 assign background_color = (shift == 2'b10)? {transition, transition, high_pitch_color}: 
                          ((shift == 2'b01)? {low_pitch_color, transition, transition} : middle_pitch_color);
 
-//------------------------Note_block------------------------//    
+//This determines the falling blocks. 
 reg [`BUFFER_LENGTH:0]      buffer [7:0];
 reg [`DISPLAY_LENGTH-1:0]   display[7:0];
 reg [19:0]                  count;
@@ -83,7 +83,7 @@ else begin
     end
 end
 end
-//----------------------------------Judges------------------------------------//
+//Judge Panel here
 reg   [29:0]    counter;
 reg   [29:0]    counter_valid;
 always @(posedge vga_clk or negedge rst_n) begin
@@ -137,7 +137,7 @@ wire    [23:0]      output_judge;
        .enable   (enable_judge),   
        .pos_data (output_judge)
    );
-//--------------------Output Port----------------------//
+//VGA Bottom output
 assign vga_bottom = {1'b0, display[6][`DISPLAY_LENGTH-1],
                  display[5][`DISPLAY_LENGTH-1],
                  display[4][`DISPLAY_LENGTH-1],
@@ -145,7 +145,7 @@ assign vga_bottom = {1'b0, display[6][`DISPLAY_LENGTH-1],
                  display[2][`DISPLAY_LENGTH-1],
                  display[1][`DISPLAY_LENGTH-1],
                  display[0][`DISPLAY_LENGTH-1], shift};
-
+//Enable flags here
 wire enable_A_flag = (pos_x - start_point_x_A < width) && (pos_x - start_point_x_A >= 0) && (pos_y < start_point_y - 16);                   
 wire enable_B_flag = (pos_x - start_point_x_B < width) && (pos_x - start_point_x_B >= 0) && (pos_y < start_point_y - 16); 
 wire enable_C_flag = (pos_x - start_point_x_C < width) && (pos_x - start_point_x_C >= 0) && (pos_y < start_point_y - 16); 

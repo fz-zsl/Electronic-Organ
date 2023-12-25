@@ -2,7 +2,6 @@
 module SettingMode_vga #(
     parameter  width            =   32,
     parameter  height           =   32,
-
     parameter  start_point_x_C  =   112,
     parameter  start_point_x_D  =   176,
     parameter  start_point_x_E  =   240,
@@ -10,7 +9,6 @@ module SettingMode_vga #(
     parameter  start_point_x_G  =   368,
     parameter  start_point_x_A  =   432,
     parameter  start_point_x_B  =   496,
-
     parameter  start_point_y    =   200
 )
 (

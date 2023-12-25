@@ -6,16 +6,12 @@ module SongChoosePanel_vga#(
    parameter  char_height              =   32,
    parameter  panel_width              =   480,
    parameter  panel_height             =   64,
-   
-   
    //In total, there are 8 panels available for outputs. 
-   parameter  start_point_x_panel_1    =   80,
-        
+   parameter  start_point_x_panel_1    =   80,  
    parameter  start_point_y_panel_1    =   64,
    parameter  start_point_y_panel_2    =   160,
    parameter  start_point_y_panel_3    =   256,
    parameter  start_point_y_panel_4    =   352,
-
    parameter  panel_color              =   24'hFFFFFF
 )(
    input   wire            vga_clk     ,

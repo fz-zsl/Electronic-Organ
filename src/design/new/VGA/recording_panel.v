@@ -1,4 +1,5 @@
 module recording_panel(
+    //This panel shows the REC panel.
     input   wire            vga_clk     ,
     input   wire            rst_n       ,
     input   wire    [9:0]   pos_x       ,
@@ -10,7 +11,7 @@ module recording_panel(
     parameter width = 64;
     parameter start_point_x = 10;
     parameter start_point_y = 400;
-    
+
     wire [12:0] data_addr;
     REC rec_panel(
         .addra      (data_addr),

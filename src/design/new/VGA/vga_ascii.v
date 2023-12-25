@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 module vga_ascii #(
     parameter   char_color  = 24'h000000
-)(
+)(  //This module transforms a charactor to pos_data based on x and y.
     input       [7:0]       ascii   ,
     input       [9:0]       x_over  ,
     input       [9:0]       y_over  ,  

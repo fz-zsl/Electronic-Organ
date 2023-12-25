@@ -1,11 +1,9 @@
 `timescale 1ns / 1ps
 module Ranklist_vga #(
-    //In total there are eight panels and each panel can contain at most 9 character from 0-9 a-z
     parameter  char_width               =   24,
     parameter  char_height              =   32,
     parameter  panel_width              =   240,
     parameter  panel_height             =   64,
-    //In total, there are 8 panels available for outputs. 
     parameter  start_point_x_panel_1    =   64,
     parameter  start_point_x_panel_2    =   336, 
     parameter  start_point_y_panel_1    =   200,
@@ -39,6 +37,7 @@ panel_with_chars #(
    .pos_data (output_1)
 );
 
+//Count the scores when a song is finished. 
 wire                enable_2;
 wire    [23:0]      output_2;
 reg     output_ready_pre;
@@ -61,7 +60,7 @@ always @(posedge vga_clk) begin
     else 
         tot_scores <= tot_scores;
 end
-
+//Change the number to string
 numbers_to_string_large ntsl_inst(
     .number      (tot_scores),
     .string      (tot_string)

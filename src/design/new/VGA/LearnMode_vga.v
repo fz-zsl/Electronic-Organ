@@ -15,7 +15,6 @@ module LearnMode_vga(
     output  wire    [9:0]   vga_bottom 
 );
 
-//This is the module that displays the COE notes. 
 parameter  width            =   32;
 parameter  height           =   32;
 
@@ -29,6 +28,7 @@ parameter  start_point_x_B  =   496;
 
 parameter  start_point_y    =   416;
 
+//This determines the background color based on the pitch 
 wire      [23:0]        background_color;  
 wire      [7:0]        transition;
 assign    transition = pos_y * 2 / 3 - 1;      
@@ -39,7 +39,7 @@ parameter  low_pitch_color =     8'hFF;
 assign background_color = (shift == 2'b10)? {transition, transition, high_pitch_color}: 
                          ((shift == 2'b01)? {low_pitch_color, transition, transition} : middle_pitch_color);
                             
-//------------------------Note_block------------------------//    
+//This determines the falling blocks. 
 reg [`BUFFER_LENGTH:0]      buffer [7:0];
 reg [`DISPLAY_LENGTH-1:0]   display[7:0];
 reg [19:0]                  count;
@@ -97,6 +97,7 @@ else begin
 end
 end
 
+//VGA bottom notes
 assign vga_bottom = {display[7][`DISPLAY_LENGTH-1], display[6][`DISPLAY_LENGTH-1],
                  display[5][`DISPLAY_LENGTH-1],
                  display[4][`DISPLAY_LENGTH-1],
@@ -105,7 +106,7 @@ assign vga_bottom = {display[7][`DISPLAY_LENGTH-1], display[6][`DISPLAY_LENGTH-1
                  display[1][`DISPLAY_LENGTH-1],
                  display[0][`DISPLAY_LENGTH-1], shift};
 
-//--------------------Output Port----------------------//
+//Enable Flags of all the notes
 wire enable_A_flag = (pos_x - start_point_x_A < width) && (pos_x - start_point_x_A >= 0) && (pos_y < start_point_y - 16);                   
 wire enable_B_flag = (pos_x - start_point_x_B < width) && (pos_x - start_point_x_B >= 0) && (pos_y < start_point_y - 16); 
 wire enable_C_flag = (pos_x - start_point_x_C < width) && (pos_x - start_point_x_C >= 0) && (pos_y < start_point_y - 16); 
