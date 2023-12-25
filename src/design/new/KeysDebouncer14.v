@@ -6,6 +6,13 @@ module KeysDebouncer14(
 	output	[13:0]	but_negedge,
 	output	[13:0]	but_active
 );
+	// handle 14 buttons together, making the top simpler
+	// buttons including:
+	// - center, up, down, left, right
+	// - 1 external button for esc
+	// - 8 external buttons for entering notes
+	// I/O ports: see the comments in KeyDebouncer.v
+	
 	KeyDebouncer KeyDebouncer0(
 		.slow_clk	(slow_clk		),
 		.rst_n		(rst_n			),

@@ -8,13 +8,13 @@ module Top (
 	input				but_left, 
 	input				but_right,
 	input				but_esc,
-	input	[7:0]		buts,
-	input 	[7:0]		switch,				
-	output reg	[7:0]   	LED,
-	output	[7:0]		Debug_LED,
-	output	[7:0]		tub_sel,
-    output  [7:0]       tub_data1,
-    output  [7:0]       tub_data2,
+	input		[7:0]	buts,
+	input 		[7:0]	switch,				
+	output	reg	[7:0]   LED,
+	output		[7:0]	Debug_LED,
+	output		[7:0]	tub_sel,
+    output  	[7:0]	tub_data1,
+    output  	[7:0]	tub_data2,
 	
 	//Output for Sound
 	output	    reg			        pwm,
@@ -26,7 +26,27 @@ module Top (
     output      wire    [3:0]       color_red   ,   //RGB Red data
     output      wire    [3:0]       color_green ,   //RGB Green data
     output      wire    [3:0]       color_blue      //RGB Blue data
-);  
+);
+	// Top module for the whole project
+	// inputs:
+	// - sys_clk: system clock
+	// - rst_n: reset signal
+	// - but_*, buts: button signals
+	// - switch: switch signals
+	// outputs:
+	// - LED: large LED signals
+	// - Debug_LED: small LED signals
+	// - tub_sel: selection signal for the 7-segment tubes
+	// - tub_data1: data to be displayed on the left 4 tubes
+	// - tub_data2: data to be displayed on the right 4 tubes
+	// - pwm: PWM signal for sound
+	// - sd: SD signal for sound
+	// - hsync: Horizontal Sync Signal for VGA
+	// - vsync: Vertical Sync Signal for VGA
+	// - color_red: RGB Red data for VGA
+	// - color_green: RGB Green data for VGA
+	// - color_blue: RGB Blue data for VGA
+
 	reg		[7:0]		 mode	  = `WelcomePage;
     reg     [7:0]        next_mode;
     //------------------Clk Divider------------------//

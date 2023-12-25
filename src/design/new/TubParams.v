@@ -1,4 +1,4 @@
-// Tub Display
+// parameters for tub sisplay
 `define tub_H       8'b01101110
 `define tub_E       8'b10011110
 `define tub_L       8'b00011100
