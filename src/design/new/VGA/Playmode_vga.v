@@ -101,21 +101,21 @@ wire enable_E_flag = (pos_x - start_point_x_E < width) && (pos_x - start_point_x
 wire enable_F_flag = (pos_x - start_point_x_F < width) && (pos_x - start_point_x_F >= 0) && (pos_y < start_point_y - 16); 
 wire enable_G_flag = (pos_x - start_point_x_G < width) && (pos_x - start_point_x_G >= 0) && (pos_y < start_point_y - 16); 
 
-always @(*) begin
+always @(posedge vga_clk) begin
     if(enable_A_flag)
-        pos_data <= (display[5][pos_y - 1] == 1'b1) ? ((display[5][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[5][pos_y - 1] == 1'b1) ? ((display[5][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_B_flag)
-        pos_data <= (display[6][pos_y - 1] == 1'b1) ? ((display[6][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[6][pos_y - 1] == 1'b1) ? ((display[6][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_C_flag)
-        pos_data <= (display[0][pos_y - 1] == 1'b1) ? ((display[0][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[0][pos_y - 1] == 1'b1) ? ((display[0][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if (enable_D_flag)
-        pos_data <= (display[1][pos_y - 1] == 1'b1) ? ((display[1][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[1][pos_y - 1] == 1'b1) ? ((display[1][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_E_flag)
-        pos_data <= (display[2][pos_y - 1] == 1'b1) ? ((display[2][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[2][pos_y - 1] == 1'b1) ? ((display[2][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_F_flag)
-        pos_data <= (display[3][pos_y - 1] == 1'b1) ? ((display[3][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[3][pos_y - 1] == 1'b1) ? ((display[3][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else if(enable_G_flag)
-        pos_data <= (display[4][pos_y - 1] == 1'b1) ? ((display[4][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
+        pos_data = (display[4][pos_y - 1] == 1'b1) ? ((display[4][`DISPLAY_LENGTH-1] == 1'b1) ? hit_color : block_color ): background_color;
     else 
         pos_data <= background_color;
 end       

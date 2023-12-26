@@ -25,7 +25,7 @@ module Breath_light(
         
             if(current_end == 9999 || current_end == 1)
             begin
-                step = ~step;
+                step <= ~step;
             end
             
             if(counter == period) 

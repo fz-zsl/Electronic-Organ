@@ -105,7 +105,7 @@ assign data_addr_D = enabled_D ? ( (pos_y - start_point_y ) * width + (pos_x - s
     assign data_addr_B = enabled_B ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_B ) ) : 0;
 
               
-always @(*) begin
+always @(posedge vga_clk) begin
     if(enabled_A && setting_cnt == 3'd6)
         pos_data <= data_output_A;
     else if(enabled_B && setting_cnt == 3'd7)

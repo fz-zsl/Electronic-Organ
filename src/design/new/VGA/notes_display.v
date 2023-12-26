@@ -106,7 +106,7 @@ module notes_display#(
         assign data_addr_B = enabled_B ? ( (pos_y - start_point_y ) * width + (pos_x - start_point_x_B ) ) : 0;
     
                   
-    always @(*) begin
+    always @(posedge vga_clk) begin
         if(enabled_A)
             pos_data <= data_output_A;
         else if(enabled_B)

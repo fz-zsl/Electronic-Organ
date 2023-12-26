@@ -60,19 +60,19 @@ module TubDisplay #(
 	// determine what to display
 	always @* begin
 		if (~rst_n) begin
-			tub_data1 <= 0;
-			tub_data2 <= 0;
+			tub_data1 = 0;
+			tub_data2 = 0;
 		end
 		else begin
 			case (tub_sel)
-				8'h80: tub_data1 <= data7;
-				8'h40: tub_data1 <= data6;
-				8'h20: tub_data1 <= data5;
-				8'h10: tub_data1 <= data4;
-				8'h08: tub_data2 <= data3;
-				8'h04: tub_data2 <= data2;
-				8'h02: tub_data2 <= data1;
-				default: tub_data2 <= data0;
+				8'h80: tub_data1 = data7;
+				8'h40: tub_data1 = data6;
+				8'h20: tub_data1 = data5;
+				8'h10: tub_data1 = data4;
+				8'h08: tub_data2 = data3;
+				8'h04: tub_data2 = data2;
+				8'h02: tub_data2 = data1;
+				default: tub_data2 = data0;
 			endcase
 		end
 	end
