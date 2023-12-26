@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+// This module generate a breathing light pattern for recoding signaling led
 module Breath_light(
     input clk,
     input rst_n,
@@ -8,6 +9,7 @@ module Breath_light(
     parameter period = 10000;
     reg [31:0] step;
     reg [31:0] current_end;
+    
     always @(posedge clk)
     begin
         if(~rst_n)
